@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// URL CORRECTA DEL BACKEND - NO USAR window.location
 const API_URL = "https://determined-compassion-production-801a.up.railway.app"
 const TENANT_ID = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
 
