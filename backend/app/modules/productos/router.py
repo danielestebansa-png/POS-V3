@@ -31,14 +31,17 @@ async def get_productos(
             FROM productos p 
             LEFT JOIN inventario i ON i.producto_id = p.id 
             WHERE p.tenant_id = :t AND p.estado = 'activo'
+            ORDER BY p.nombre
         """),
         {"t": tid}
     )
     rows = result.fetchall()
-    return [
+    products = [
         {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "stock": int(r[3] or 0)}
         for r in rows
     ]
+    print(f"DEBUG: Found {len(products)} products for tenant {tid}")
+    return products
 
 
 @router.get("/categorias")
