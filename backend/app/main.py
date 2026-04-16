@@ -86,7 +86,7 @@ async def init_db():
         result = await conn.execute(text("SELECT COUNT(*) FROM categorias WHERE tenant_id = :t"), {"t": tenant_id})
         count = result.scalar()
         
-        if count == 0:
+        if count < 5:
             print("Seeding categories and products...")
             cat_ids = {}
             categorias = ["Útiles Escolares", "Papelería", "Artes y Manualidades", "Tecnología"]
