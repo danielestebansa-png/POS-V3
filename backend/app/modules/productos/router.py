@@ -25,6 +25,26 @@ async def get_productos(
     db: AsyncSession = Depends(get_db)
 ):
     tid = current_user["tenant_id"]
+    
+    # Debug: log the tenant_id
+    print(f"DEBUG: tenant_id = {tid}")
+    
+    # First check if tenant exists
+    tenant_check = await db.execute(
+        text("SELECT COUNT(*) FROM tenants WHERE id = :t"),
+        {"t": tid}
+    )
+    tenant_count = tenant_check.scalar()
+    print(f"DEBUG: Tenant exists: {tenant_count}")
+    
+    # Check products table
+    prod_check = await db.execute(
+        text("SELECT COUNT(*) FROM productos WHERE tenant_id = :t"),
+        {"t": tid}
+    )
+    prod_count = prod_check.scalar()
+    print(f"DEBUG: Products count: {prod_count}")
+    
     result = await db.execute(
         text("""
             SELECT p.id, p.nombre, p.precio_venta, COALESCE(i.cantidad, 0) as stock 
@@ -40,7 +60,7 @@ async def get_productos(
         {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "stock": int(r[3] or 0)}
         for r in rows
     ]
-    print(f"DEBUG: Found {len(products)} products for tenant {tid}")
+    print(f"DEBUG: Found {len(products)} products")
     return products
 
 
