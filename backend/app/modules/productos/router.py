@@ -19,24 +19,62 @@ class ProductoResponse(BaseModel):
     precio_venta: float
 
 
-@router.get("/debug/fix")
-async def fix_tenant_ids():
-    """Fix tenant IDs - update all records to correct tenant"""
+@router.get("/productos/seed")
+async def force_seed():
+    """Force seed products with correct tenant ID"""
     from app.core.database import AsyncSessionLocal
     from sqlalchemy import text
+    from uuid import uuid4
     
     correct_tenant = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
-    wrong_tenant = "c587c173-8d26-4a52-a59f-8c65be96784c"
     
     async with AsyncSessionLocal() as db:
-        # Update productos
-        await db.execute(text(f"UPDATE productos SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
-        # Update inventario
-        await db.execute(text(f"UPDATE inventario SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
-        # Update categorias
-        await db.execute(text(f"UPDATE categorias SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
+        # Delete all products
+        await db.execute(text("DELETE FROM inventario"))
+        await db.execute(text("DELETE FROM productos"))
+        await db.execute(text("DELETE FROM categorias"))
+        await db.execute(text("DELETE FROM tenants"))
+        
+        # Create tenant
+        await db.execute(text(f"""
+            INSERT INTO tenants (id, nombre, nit, direccion, telefono, email, plan, estado)
+            VALUES ('{correct_tenant}', 'Tienda Demo', '12345678901', 'Calle 123', '3001234567', 'demo@tienda.com', 'basic', 'activo')
+        """))
+        
+        # Create category
+        cat_id = str(uuid4())
+        await db.execute(text(f"""
+            INSERT INTO categorias (id, tenant_id, nombre, estado)
+            VALUES ('{cat_id}', '{correct_tenant}', 'Bebidas y Comidas', 'activo')
+        """))
+        
+        # Create products
+        productos = [
+            ("Café Americano", 2500, 50),
+            ("Café Latte", 3500, 30),
+            ("Te Verde", 2500, 40),
+            ("Jugo Natural", 4500, 20),
+            ("Sandwich", 6500, 15),
+            ("Croissant", 2500, 25),
+            ("Galletas", 1500, 60),
+            ("Agua Mineral", 1500, 100),
+            ("Gaseosa", 2000, 80),
+            ("Cerveza", 4000, 48),
+        ]
+        
+        for nombre, precio, stock in productos:
+            prod_id = str(uuid4())
+            await db.execute(text(f"""
+                INSERT INTO productos (id, tenant_id, nombre, precio_venta, estado)
+                VALUES ('{prod_id}', '{correct_tenant}', '{nombre}', {precio}, 'activo')
+            """))
+            await db.execute(text(f"""
+                INSERT INTO inventario (id, tenant_id, producto_id, cantidad)
+                VALUES ('{str(uuid4())}', '{correct_tenant}', '{prod_id}', {stock})
+            """))
+        
         await db.commit()
-        return {"message": "Tenant IDs updated successfully"}
+        return {"message": "Seed completed! Products created."}
 
 
 @router.get("/productos")
