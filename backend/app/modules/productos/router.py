@@ -19,16 +19,24 @@ class ProductoResponse(BaseModel):
     precio_venta: float
 
 
-@router.get("/debug/productos")
-async def debug_productos():
-    """Debug endpoint to see all products regardless of tenant"""
+@router.get("/debug/fix")
+async def fix_tenant_ids():
+    """Fix tenant IDs - update all records to correct tenant"""
     from app.core.database import AsyncSessionLocal
     from sqlalchemy import text
     
+    correct_tenant = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
+    wrong_tenant = "c587c173-8d26-4a52-a59f-8c65be96784c"
+    
     async with AsyncSessionLocal() as db:
-        result = await db.execute(text("SELECT id, tenant_id, nombre FROM productos"))
-        rows = result.fetchall()
-        return [{"id": str(r[0]), "tenant_id": str(r[1]), "nombre": r[2]} for r in rows]
+        # Update productos
+        await db.execute(text(f"UPDATE productos SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
+        # Update inventario
+        await db.execute(text(f"UPDATE inventario SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
+        # Update categorias
+        await db.execute(text(f"UPDATE categorias SET tenant_id = '{correct_tenant}' WHERE tenant_id = '{wrong_tenant}'"))
+        await db.commit()
+        return {"message": "Tenant IDs updated successfully"}
 
 
 @router.get("/productos")
