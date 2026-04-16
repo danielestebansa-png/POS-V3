@@ -19,6 +19,18 @@ class ProductoResponse(BaseModel):
     precio_venta: float
 
 
+@router.get("/debug/productos")
+async def debug_productos():
+    """Debug endpoint to see all products regardless of tenant"""
+    from app.core.database import AsyncSessionLocal
+    from sqlalchemy import text
+    
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(text("SELECT id, tenant_id, nombre FROM productos"))
+        rows = result.fetchall()
+        return [{"id": str(r[0]), "tenant_id": str(r[1]), "nombre": r[2]} for r in rows]
+
+
 @router.get("/productos")
 async def get_productos(
     current_user: dict = Depends(get_current_user),
