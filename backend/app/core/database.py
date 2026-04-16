@@ -7,16 +7,26 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.core.config import settings
 
+# Auto-detectar driver desde la URL
+db_url = settings.DATABASE_URL
+if "+asyncpg" in db_url:
+    async_driver = "postgresql+asyncpg"
+elif "+psycopg2" in db_url:
+    async_driver = "postgresql+psycopg2"
+else:
+    async_driver = "postgresql+asyncpg"
+
 # Async engine (for FastAPI)
 async_engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=settings.DEBUG,
     future=True
 )
 
 # Sync engine (for scripts/migrations)
+sync_url = settings.DATABASE_URL_SYNC.replace("postgresql://", "postgresql+psycopg2://")
 sync_engine = create_engine(
-    settings.DATABASE_URL_SYNC,
+    sync_url,
     echo=settings.DEBUG
 )
 
@@ -28,25 +38,18 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 SessionLocal = sessionmaker(
-    bind=sync_engine,
     autocommit=False,
-    autoflush=False
+    autoflush=False,
+    bind=sync_engine
 )
 
-# Base for models
+# Base para modelos
 Base = declarative_base()
 
-
-# Dependency for FastAPI
 async def get_db():
     async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session
 
-
-# Sync session for scripts
 def get_sync_db():
     db = SessionLocal()
     try:
