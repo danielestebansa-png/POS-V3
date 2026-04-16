@@ -26,12 +26,17 @@ async def get_productos(
 ):
     tid = current_user["tenant_id"]
     result = await db.execute(
-        text("SELECT id, nombre, precio_venta FROM productos WHERE tenant_id = :t AND estado = 'activo'"),
+        text("""
+            SELECT p.id, p.nombre, p.precio_venta, COALESCE(i.cantidad, 0) as stock 
+            FROM productos p 
+            LEFT JOIN inventario i ON i.producto_id = p.id 
+            WHERE p.tenant_id = :t AND p.estado = 'activo'
+        """),
         {"t": tid}
     )
     rows = result.fetchall()
     return [
-        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0)}
+        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "stock": int(r[3] or 0)}
         for r in rows
     ]
 

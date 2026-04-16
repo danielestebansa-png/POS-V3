@@ -67,16 +67,83 @@ app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 
 @app.on_event("startup")
 async def init_db():
-    """Initialize database tables"""
-    from app.core.database import Base
+    """Initialize database tables and seed data if empty"""
+    from app.core.database import Base, AsyncSessionLocal
     from app.modules.tenants.models import Tenant
-    from app.modules.productos.models import User
-    from app.modules.productos.models import Categoria, Producto, Inventario
+    from app.modules.productos.models import User, Categoria, Producto, Inventario
     from app.modules.ventas.models import Caja, Venta, VentaDetalle
     from app.modules.productos.models import Cliente
+    from sqlalchemy import select
+    from uuid import uuid4
     
+    # Create tables
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Seed data if empty
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Producto).limit(1))
+        if not result.scalar_one_or_none():
+            print("🔄 Seed data...")
+            # Create tenant
+            tenant = Tenant(
+                id=uuid4(),
+                nombre="Tienda Demo",
+                nit="12345678901",
+                direccion="Calle 123",
+                telefono="3001234567",
+                email="demo@tienda.com",
+                plan="basic",
+                estado="activo"
+            )
+            session.add(tenant)
+            await session.flush()
+            
+            # Create category
+            categoria = Categoria(
+                id=uuid4(),
+                tenant_id=tenant.id,
+                nombre="Bebidas y Comidas"
+            )
+            session.add(categoria)
+            await session.flush()
+            
+            # Create products
+            productos = [
+                {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
+                {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
+                {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40},
+                {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20},
+                {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15},
+                {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25},
+                {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60},
+                {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100},
+                {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
+                {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
+            ]
+            
+            for p in productos:
+                prod = Producto(
+                    id=uuid4(),
+                    tenant_id=tenant.id,
+                    nombre=p["nombre"],
+                    precio_venta=p["precio_venta"],
+                    precio_costo=p["precio_costo"],
+                    estado="activo"
+                )
+                session.add(prod)
+                await session.flush()
+                
+                inv = Inventario(
+                    id=uuid4(),
+                    tenant_id=tenant.id,
+                    producto_id=prod.id,
+                    cantidad=p["stock"]
+                )
+                session.add(inv)
+            
+            await session.commit()
+            print("✅ Seed complete!")
 
 
 # ============================================
