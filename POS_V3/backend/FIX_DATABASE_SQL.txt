@@ -1,0 +1,25 @@
+-- ============================================================================
+-- FIX DATABASE - Ejecutar ANTES de tests
+-- ============================================================================
+-- Este archivo contiene TODOS los fixes necesarios para PostgreSQL
+-- Ejecución: Tools > SQL Editor en DBeaver o pgAdmin
+-- ============================================================================
+
+-- Fix 1: Habilitar generación automática de UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Fix 2: Configurar ID automático para contador_facturas
+ALTER TABLE contador_facturas ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+
+-- Fix 3: Evitar números de factura duplicados por tenant
+ALTER TABLE ventas ADD CONSTRAINT IF NOT EXISTS unique_numero_por_tenant UNIQUE (tenant_id, numero);
+
+-- Verificar que todo esté correcto
+SELECT 
+    'contador_facturas id default: ' || column_default 
+FROM information_schema.columns 
+WHERE table_name = 'contador_facturas' AND column_name = 'id';
+
+-- Verificar constraint en ventas
+SELECT conname FROM pg_constraint 
+WHERE conname = 'unique_numero_por_tenant';
