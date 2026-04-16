@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://determined-compassion-production-801a.up.railway.app'
 
 // Tenant ID del seed (Tienda Demo)
 const TENANT_ID = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
