@@ -82,13 +82,16 @@ async def init_db():
 
     # Seed data if empty
     async with AsyncSessionLocal() as session:
-        # Check if tenant with our fixed ID exists
+        # Check if tenant exists by ID OR by NIT
         result = await session.execute(
-            select(Tenant).where(Tenant.id == "4a7e815e-f68e-46f4-863d-1d2f786301e8")
+            select(Tenant).where(
+                (Tenant.id == "4a7e815e-f68e-46f4-863d-1d2f786301e8") | 
+                (Tenant.nit == "12345678901")
+            )
         )
-        tenant = result.scalar_one_or_none()
-
-        if not tenant:
+        existing_tenant = result.scalar_one_or_none()
+        
+        if not existing_tenant:
             print("🔄 Seed data...")
             # Create tenant with fixed ID
             tenant = Tenant(
@@ -103,6 +106,10 @@ async def init_db():
             )
             session.add(tenant)
             await session.flush()
+        else:
+            # Use existing tenant
+            tenant = existing_tenant
+            print("✅ Tenant already exists")
 
             # Create category
             categoria = Categoria(
@@ -112,43 +119,52 @@ async def init_db():
             )
             session.add(categoria)
             await session.flush()
+
+            # Check if products exist
+            result_prod = await session.execute(
+                select(Producto).where(Producto.tenant_id == tenant.id)
+            )
+            existing_products = result_prod.scalars().all()
             
-            # Create products
-            productos = [
-                {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
-                {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
-                {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40},
-                {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20},
-                {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15},
-                {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25},
-                {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60},
-                {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100},
-                {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
-                {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
-            ]
+            if not existing_products:
+                # Create products
+                productos = [
+                    {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
+                    {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
+                    {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40},
+                    {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20},
+                    {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15},
+                    {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25},
+                    {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60},
+                    {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100},
+                    {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
+                    {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
+                ]
 
-            for p in productos:
-                prod = Producto(
-                    id=uuid4(),
-                    tenant_id=tenant.id,
-                    nombre=p["nombre"],
-                    precio_venta=p["precio_venta"],
-                    precio_costo=p["precio_costo"],
-                    estado="activo"
-                )
-                session.add(prod)
-                await session.flush()
+                for p in productos:
+                    prod = Producto(
+                        id=uuid4(),
+                        tenant_id=tenant.id,
+                        nombre=p["nombre"],
+                        precio_venta=p["precio_venta"],
+                        precio_costo=p["precio_costo"],
+                        estado="activo"
+                    )
+                    session.add(prod)
+                    await session.flush()
 
-                inv = Inventario(
-                    id=uuid4(),
-                    tenant_id=tenant.id,
-                    producto_id=prod.id,
-                    cantidad=p["stock"]
-                )
-                session.add(inv)
+                    inv = Inventario(
+                        id=uuid4(),
+                        tenant_id=tenant.id,
+                        producto_id=prod.id,
+                        cantidad=p["stock"]
+                    )
+                    session.add(inv)
 
-            await session.commit()
-            print("✅ Seed complete!")
+                await session.commit()
+                print("✅ Seed complete!")
+            else:
+                print("✅ Products already exist")
 
 
 # ============================================
