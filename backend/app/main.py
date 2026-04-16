@@ -75,19 +75,24 @@ async def init_db():
     from app.modules.productos.models import Cliente
     from sqlalchemy import select
     from uuid import uuid4
-    
+
     # Create tables
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     # Seed data if empty
     async with AsyncSessionLocal() as session:
-        result = await session.execute(select(Producto).limit(1))
-        if not result.scalar_one_or_none():
+        # Check if tenant with our fixed ID exists
+        result = await session.execute(
+            select(Tenant).where(Tenant.id == "4a7e815e-f68e-46f4-863d-1d2f786301e8")
+        )
+        tenant = result.scalar_one_or_none()
+
+        if not tenant:
             print("🔄 Seed data...")
-            # Create tenant
+            # Create tenant with fixed ID
             tenant = Tenant(
-                id=uuid4(),
+                id="4a7e815e-f68e-46f4-863d-1d2f786301e8",
                 nombre="Tienda Demo",
                 nit="12345678901",
                 direccion="Calle 123",
@@ -98,10 +103,10 @@ async def init_db():
             )
             session.add(tenant)
             await session.flush()
-            
+
             # Create category
             categoria = Categoria(
-                id=uuid4(),
+                id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
                 tenant_id=tenant.id,
                 nombre="Bebidas y Comidas"
             )
@@ -121,7 +126,7 @@ async def init_db():
                 {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
                 {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
             ]
-            
+
             for p in productos:
                 prod = Producto(
                     id=uuid4(),
@@ -133,7 +138,7 @@ async def init_db():
                 )
                 session.add(prod)
                 await session.flush()
-                
+
                 inv = Inventario(
                     id=uuid4(),
                     tenant_id=tenant.id,
@@ -141,7 +146,7 @@ async def init_db():
                     cantidad=p["stock"]
                 )
                 session.add(inv)
-            
+
             await session.commit()
             print("✅ Seed complete!")
 
