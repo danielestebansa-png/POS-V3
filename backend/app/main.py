@@ -2,7 +2,7 @@
 # FASTAPI MAIN APPLICATION
 # ============================================
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import async_engine
@@ -68,7 +68,7 @@ app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 @app.on_event("startup")
 async def init_db():
     """Initialize database tables and seed data if empty"""
-    from app.core.database import Base, AsyncSessionLocal, get_db
+    from app.core.database import Base, AsyncSessionLocal
     from app.modules.tenants.models import Tenant
     from app.modules.productos.models import User, Categoria, Producto, Inventario
     from app.modules.ventas.models import Caja, Venta, VentaDetalle
@@ -183,46 +183,3 @@ async def init_db():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-# ============================================
-# ADMIN ENDPOINT - Create categories/products
-# ============================================
-@app.post("/api/admin/seed")
-async def admin_seed(db: AsyncSession = Depends(get_db)):
-    """Seed categories and products - admin only"""
-    from uuid import uuid4
-    from sqlalchemy import text
-    
-    tenant_id = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
-    
-    try:
-        result = await db.execute(text("SELECT COUNT(*) FROM categorias WHERE tenant_id = :t"), {"t": tenant_id})
-        count = result.scalar()
-        
-        if count >= 4:
-            return {"message": "Already seeded", "count": count}
-        
-        cat_ids = {}
-        categorias = ["Útiles Escolares", "Papelería", "Artes y Manualidades", "Tecnología"]
-        for cat_nombre in categorias:
-            cat_id = str(uuid4())
-            cat_ids[cat_nombre] = cat_id
-            await db.execute(text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, NULL, 'activo', NOW(), NOW())"), {"id": cat_id, "tenant": tenant_id, "nombre": cat_nombre})
-        
-        subcategorias = [("Cuadernos", "Útiles Escolares"), ("Lápices y Colores", "Útiles Escolares"), ("Carpetas", "Papelería"), ("Papel Bond", "Papelería"), ("Pinturas", "Artes y Manualidades"), ("Pinceles", "Artes y Manualidades"), ("Cables USB", "Tecnología"), ("Mouse", "Tecnología")]
-        for sub_nombre, padre_nombre in subcategorias:
-            sub_id = str(uuid4())
-            await db.execute(text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :padre, 'activo', NOW(), NOW())"), {"id": sub_id, "tenant": tenant_id, "nombre": sub_nombre, "padre": cat_ids[padre_nombre]})
-        
-        productos = [("Cuaderno College 100 hojas", 8500, 45), ("Lápices colores x12", 12000, 30), ("Borrador blanco", 1500, 100), ("Sacapuntas metálico", 3500, 25), ("Regla 30cm", 2500, 40), ("Carpeta plastificada", 5500, 35), ("Papel Bond A4 x500", 18000, 20), ("Clips x50", 2500, 50), ("Grapadora", 12000, 15), ("Tijeras escolares", 4500, 25), ("Pintura acrílica x6", 15000, 18), ("Pinceles pelo fino x5", 8000, 22), ("Cartulina colores x10", 6000, 40), ("Pegamento escolar", 3500, 60), ("Fomi colores", 4000, 35), ("Cable USB tipo C", 15000, 28), ("Mouse inalámbrico", 25000, 12), ("Teclado USB", 35000, 8), ("Audífonos basic", 18000, 15), ("Pendrive 32GB", 22000, 20)]
-        for nombre, precio, stock in productos:
-            prod_id = str(uuid4())
-            cat_idx = productos.index((nombre, precio, stock))
-            cat_keys = list(cat_ids.keys())
-            cat = cat_keys[cat_idx // 5]
-            await db.execute(text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, stock, categoria_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :precio, :costo, :stock, :cat, 'activo', NOW(), NOW())"), {"id": prod_id, "tenant": tenant_id, "nombre": nombre, "precio": precio, "costo": precio*0.5, "stock": stock, "cat": cat_ids[cat]})
-        
-        await db.commit()
-        return {"message": f"Created {len(categorias)} categories, {len(subcategorias)} subcategories, and {len(productos)} products"}
-    except Exception as e:
-        return {"error": str(e)}
