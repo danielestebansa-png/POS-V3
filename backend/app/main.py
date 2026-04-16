@@ -111,23 +111,32 @@ async def init_db():
             tenant = existing_tenant
             print("✅ Tenant already exists")
 
-            # Create category
-            categoria = Categoria(
-                id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
-                tenant_id=tenant.id,
-                nombre="Bebidas y Comidas"
+            # Force create category if not exists
+            result_cat = await session.execute(
+                select(Categoria).where(Categoria.tenant_id == tenant.id)
             )
-            session.add(categoria)
-            await session.flush()
+            existing_cat = result_cat.scalar_one_or_none()
+            
+            if not existing_cat:
+                categoria = Categoria(
+                    id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
+                    tenant_id=tenant.id,
+                    nombre="Bebidas y Comidas"
+                )
+                session.add(categoria)
+                await session.flush()
+                print("✅ Category created")
+            else:
+                print("✅ Category already exists")
 
-            # Check if products exist
+            # Force create products if not exist
             result_prod = await session.execute(
                 select(Producto).where(Producto.tenant_id == tenant.id)
             )
             existing_products = result_prod.scalars().all()
             
-            if not existing_products:
-                # Create products
+            if len(existing_products) == 0:
+                print("🔄 Creating products...")
                 productos = [
                     {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
                     {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
@@ -164,7 +173,7 @@ async def init_db():
                 await session.commit()
                 print("✅ Seed complete!")
             else:
-                print("✅ Products already exist")
+                print(f"✅ Products already exist: {len(existing_products)}")
 
 
 # ============================================
