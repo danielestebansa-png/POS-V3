@@ -344,3 +344,29 @@ async def get_inventario_detalle(current_user: dict = Depends(get_current_user),
     }
 
 
+
+
+# Promociones
+class PromocionCreate(BaseModel):
+    nombre: str
+    tipo_descuento: str = "porcentaje"
+    valor: float
+    fecha_inicio: str = ""
+    fecha_fin: str = ""
+    estado: str = "activo"
+
+@router.get("/promociones")
+async def get_promociones(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    result = await db.execute(text("SELECT id, nombre, tipo_descuento, valor, fecha_inicio, fecha_fin, estado FROM promociones WHERE tenant_id = :t AND estado = 'activo'"), {"t": tid})
+    return [{"id": str(r[0]), "nombre": r[1], "tipo": r[2], "valor": float(r[3]), "inicio": str(r[4]), "fin": str(r[5]), "estado": r[6]} for r in result.fetchall()]
+
+@router.post("/promociones", status_code=201)
+async def create_promocion(p: PromocionCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    pid = str(uuid.uuid4())
+    await db.execute(text("INSERT INTO promociones (id, tenant_id, nombre, tipo_descuento, valor, fecha_inicio, fecha_fin, estado) VALUES (:id, :t, :n, :tipo, :val, :ini, :fin, :est)"),
+                   {"id": pid, "t": tid, "n": p.nombre, "tipo": p.tipo_descuento, "val": p.valor, "ini": p.fecha_inicio, "fin": p.fecha_fin, "est": p.estado})
+    await db.commit()
+    return {"id": pid, "message": "Promocion creada"}
