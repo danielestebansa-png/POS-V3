@@ -399,11 +399,14 @@ function InventarioModule() {
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
           <button onClick={() => {
-          if (document.querySelector('input[name=nombre]').value) {
-            alert('✅ Producto creado: ' + document.querySelector('input[name=nombre]').value + ' (Demo)')
-            document.querySelector('input[name=nombre]').value = ''
-            document.querySelector('input[name=precio]').value = ''
-            document.querySelector('input[name=stock]').value = ''
+          const nombreInput = document.querySelector('input[name=nombre]')
+          if (nombreInput && nombreInput.value) {
+            alert('✅ Producto creado: ' + nombreInput.value + ' (Demo)')
+            nombreInput.value = ''
+            const precioInput = document.querySelector('input[name=precio]')
+            const stockInput = document.querySelector('input[name=stock]')
+            if (precioInput) precioInput.value = ''
+            if (stockInput) stockInput.value = ''
           } else {
             alert('Escribe un nombre')
           }
