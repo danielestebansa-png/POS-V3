@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getProductos, getVentas, createVenta } from './services/api'
+import { getProductos, getVentas, createVenta, crearProducto } from './services/api'
 import ProductManager from './components/ProductManager'
 import PaymentModal from './components/PaymentModal'
 import ReceiptModal from './components/ReceiptModal'
@@ -393,20 +393,37 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
+  const guardarProducto = async (e) => {
+    e.preventDefault()
+    const form = e.target
+    try {
+      await crearProducto({
+        nombre: form.nombre.value,
+        precio_venta: parseFloat(form.precio.value) || 0,
+        stock: parseInt(form.stock.value) || 0,
+      })
+      const r = await getProductos()
+      setProductos(r.data || [])
+      setShowModal(false)
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
+  }
+
   if (showModal) return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
-        <div className="space-y-3">
+        <form onSubmit={guardarProducto} className="space-y-3">
           <input placeholder="Nombre *" className="w-full border rounded px-3 py-2" name="nombre" />
           <div className="grid grid-cols-2 gap-3">
             <input placeholder="Precio" type="number" className="border rounded px-3 py-2" name="precio" />
             <input placeholder="Stock" type="number" className="border rounded px-3 py-2" name="stock" />
           </div>
-        </div>
+        </form>
         <div className="flex gap-2 mt-4">
           <button onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
-          <button onClick={() => {alert('Crear clicked!');setShowModal(false)}} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
+          <button onClick={guardarProducto} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
         </div>
       </div>
     </div>
