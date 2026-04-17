@@ -15,7 +15,7 @@ export default function App() {
   const [portal, setPortal] = useState('inicio')
   
   useEffect(() => {
-    const path = window.location.pathname
+    const path = window.location.hash.replace('#', '') || window.location.pathname
     if (path.startsWith('/pos')) setPortal('pos')
     else if (path.startsWith('/portal')) setPortal('portal')
     else setPortal('inicio')
@@ -60,8 +60,13 @@ function POSPortal() {
   const [currentPage, setCurrentPage] = useState('facturar')
   const [menuOpen, setMenuOpen] = useState(false)
   
+  // Read page from URL hash on mount
+  useEffect(() => {
+    const hash = window.location.hash.replace('#/pos/', '') || 'facturar';
+    if (hash && hash !== currentPage) setCurrentPage(hash);
+  }, []);
+  
   const posMenu = [
-    { id: 'facturar', label: 'Facturar', icon: '📄' },
     { id: 'documentos', label: 'Documentos electrónicos', icon: '📧' },
     { id: 'ingresos', label: 'Ingresos', icon: '💰', submenu: [
       { id: 'historial_ventas', label: 'Historial de ventas' },
