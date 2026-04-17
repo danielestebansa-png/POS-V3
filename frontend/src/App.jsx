@@ -15,10 +15,16 @@ export default function App() {
   const [portal, setPortal] = useState('inicio')
   
   useEffect(() => {
-    const path = window.location.pathname
-    if (path.startsWith('/pos')) setPortal('pos')
-    else if (path.startsWith('/portal')) setPortal('portal')
-    else setPortal('inicio')
+    const hash = window.location.hash.replace('#', '') || '/';
+    if (hash.startsWith('/pos')) setPortal('pos');
+    else if (hash.startsWith('/portal')) setPortal('portal');
+    else setPortal('inicio');
+    
+    // Extract page from hash like #/pos/facturar
+    const parts = hash.split('/').filter(Boolean);
+    if (parts[0] === 'pos' && parts[1]) {
+      setCurrentPage(parts[1]);
+    }
   }, [])
 
   if (portal === 'pos') return <POSPortal />
@@ -31,9 +37,7 @@ import Layout from './components/layout/Layout'
 function InicioPortal() {
   const [currentPage, setCurrentPage] = useState('inicio')
   const navigateTo = (page) => {
-    if (page === 'pos' || page === 'pos_full') window.location.href = '/pos'
-    else if (page === 'portal') window.location.href = '/portal'
-    else setCurrentPage(page)
+    window.location.hash = '/pos/' + page
   }
   return <Layout currentPage={currentPage} onNavigate={navigateTo}><Dashboard onNavigate={navigateTo} /></Layout>
 }
@@ -59,6 +63,12 @@ function Dashboard({ onNavigate }) {
 function POSPortal() {
   const [currentPage, setCurrentPage] = useState('facturar')
   const [menuOpen, setMenuOpen] = useState(false)
+
+  // Sync hash with currentPage
+  useEffect(() => {
+    const hashPage = window.location.hash.replace('#/pos/', '') || 'facturar';
+    if (hashPage && hashPage !== currentPage) setCurrentPage(hashPage);
+  }, []);
   
   const posMenu = [
     { id: 'facturar', label: 'Facturar', icon: '📄' },
@@ -125,7 +135,7 @@ function POSPortal() {
                         const el = document.getElementById(`submenu-${idx}`)
                         el.classList.toggle('hidden')
                       } else {
-                        setCurrentPage(item.id)
+                        setCurrentPage(item.id); window.location.hash = '/pos/' + item.id
                         setMenuOpen(false)
                       }
                     }}
@@ -139,7 +149,7 @@ function POSPortal() {
                       {item.submenu.map(sub => (
                         <button 
                           key={sub.id}
-                          onClick={() => { setCurrentPage(sub.id); setMenuOpen(false) }}
+                          onClick={() => { setCurrentPage(sub.id); window.location.hash = '/pos/' + sub.id; setMenuOpen(false) }}
                           className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-100"
                         >
                           {sub.label}
