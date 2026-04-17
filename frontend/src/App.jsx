@@ -368,6 +368,7 @@ function InventarioModule() {
   const [productos, setProductos] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  const [formData, setFormData] = useState({nombre: '', precio: '', stock: ''})
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
