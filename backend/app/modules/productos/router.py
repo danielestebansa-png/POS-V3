@@ -130,3 +130,87 @@ async def get_categorias(current_user: dict = Depends(get_current_user), db: Asy
         {"t": tid}
     )
     return [{"id": str(r[0]), "nombre": r[1]} for r in result.fetchall()]
+
+# Create Producto
+class ProductoCreate(BaseModel):
+    nombre: str
+    precio_venta: float
+    precio_costo: Optional[float] = None
+    stock: Optional[int] = 0
+    categoria_id: Optional[str] = None
+    codigo: Optional[str] = None
+    estado: str = "activo"
+
+
+@router.post("/productos", status_code=201)
+async def create_producto(producto: ProductoCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    pid = str(uuid.uuid4())
+    
+    await db.execute(
+        text("""INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, categoria_id, codigo, estado) 
+              VALUES (:id, :tid, :nombre, :pv, :pc, :cat, :cod, :est)"""),
+        {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta, 
+         "pc": producto.precio_costo, "cat": producto.categoria_id, "cod": producto.codigo, "est": producto.estado}
+    )
+    await db.commit()
+    
+    # Also add to inventario
+    await db.execute(
+        text("INSERT INTO inventario (id, tenant_id, producto_id, cantidad) VALUES (:id, :tid, :pid, :cant)"),
+        {"id": str(uuid.uuid4()), "tid": tid, "pid": pid, "cant": producto.stock or 0}
+    )
+    await db.commit()
+    
+    return {"id": pid, "message": "Producto creado"}
+
+
+# Update Producto
+@router.put("/productos/{producto_id}")
+async def update_producto(producto_id: str, producto: ProductoCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    await db.execute(
+        text("""UPDATE productos SET nombre = :nombre, precio_venta = :pv, precio_costo = :pc, 
+              categoria_id = :cat, codigo = :cod, estado = :est WHERE id = :id AND tenant_id = :tid"""),
+        {"id": producto_id, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta,
+         "pc": producto.precio_costo, "cat": producto.categoria_id, "cod": producto.codigo, "est": producto.estado}
+    )
+    await db.commit()
+    
+    return {"message": "Producto actualizado"}
+
+
+# Delete Producto
+@router.delete("/productos/{producto_id}")
+async def delete_producto(producto_id: str, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    await db.execute(text("DELETE FROM inventario WHERE producto_id = :pid AND tenant_id = :tid"), {"pid": producto_id, "tid": tid})
+    await db.execute(text("DELETE FROM productos WHERE id = :id AND tenant_id = :tid"), {"id": producto_id, "tid": tid})
+    await db.commit()
+    
+    return {"message": "Producto eliminado"}
+
+
+# Create Categoria
+class CategoriaCreate(BaseModel):
+    nombre: str
+    descripcion: Optional[str] = None
+    padre_id: Optional[str] = None
+
+
+@router.post("/categorias", status_code=201)
+async def create_categoria(categoria: CategoriaCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    cid = str(uuid.uuid4())
+    
+    await db.execute(
+        text("INSERT INTO categorias (id, tenant_id, nombre, descripcion, padre_id, estado) VALUES (:id, :tid, :nom, :desc, :padre, 'activo')"),
+        {"id": cid, "tid": tid, "nom": categoria.nombre, "desc": categoria.descripcion, "padre": categoria.padre_id}
+    )
+    await db.commit()
+    
+    return {"id": cid, "message": "Categoría creada"}
