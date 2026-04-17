@@ -494,14 +494,12 @@ function InventarioModule() {
 function GestionInvModule() {
   const [page, setPage] = useState('variantes')
   
-  // Read page from URL on mount
+  // Read page from URL on mount - simpler
   useEffect(() => {
-    const fullHash = window.location.hash || '';
-    const pageFromUrl = fullHash.replace('#/pos/gestion_inv/', '').replace('#/pos/gestion_inv', '') || '';
-    console.log('Full hash:', fullHash, 'Page:', pageFromUrl);
-    if (pageFromUrl && pageFromUrl !== page) {
-      setPage(pageFromUrl);
-    }
+    const fullHash = window.location.hash;
+    if (fullHash.includes('/variantes')) setPage('variantes');
+    else if (fullHash.includes('/categorias')) setPage('categorias');
+    else if (fullHash.includes('/campos')) setPage('campos');
   }, [])
   
   const cards = [
