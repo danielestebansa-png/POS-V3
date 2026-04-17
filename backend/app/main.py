@@ -117,15 +117,23 @@ async def init_db():
             )
             existing_cat = result_cat.scalar_one_or_none()
             
-            if True: # Force create all categories
-                categoria = Categoria(
-                    id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
-                    tenant_id=tenant.id,
-                    nombre="Bebidas y Comidas"
-                )
-                session.add(categoria)
-                await session.flush()
-                print("✅ Category created")
+            # Check and create categories
+            result_all = await session.execute(select(Categoria).where(Categoria.tenant_id == tenant.id))
+            existing_cats = result_all.scalars().all()
+            cat_names = [c.nombre for c in existing_cats]
+            
+            new_cats = [
+                ("Útiles Escolares", "d7bee82b-312f-408b-bb1e-8e5d84e491b2"),
+                ("Papelería", "e7bee82b-312f-408b-bb1e-8e5d84e491b3"),
+                ("Artes y Manualidades", "f7bee82b-312f-408b-bb1e-8e5d84e491b4"),
+                ("Tecnología", "g7bee82b-312f-408b-bb1e-8e5d84e491b5"),
+            ]
+            for nombre, cat_id in new_cats:
+                if nombre not in cat_names:
+                    categoria = Categoria(id=cat_id, tenant_id=tenant.id, nombre=nombre)
+                    session.add(categoria)
+            await session.flush()
+            print("✅ Categories added")
             else:
                 print("✅ Category already exists")
 
