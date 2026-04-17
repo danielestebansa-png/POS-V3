@@ -367,6 +367,7 @@ function FacturarModule() {
 function InventarioModule() {
   const [productos, setProductos] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
@@ -392,13 +393,20 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
+  if (showModal) return (
+    <div className="p-8 text-center">
+      <p>MODAL HERE - click to close</p>
+      <button onClick={() => setShowModal(false)} className="bg-red-500 text-white p-2 rounded">Cerrar</button>
+    </div>
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">📦 Productos y Servicios</h2>
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
-          <button onClick={() => alert('Nuevo producto clicked!')} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
+          <button onClick={() => setShowModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
         </div>
       </div>
       
