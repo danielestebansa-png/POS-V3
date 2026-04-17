@@ -106,14 +106,6 @@ async def init_db():
             )
             session.add(tenant)
             await session.flush()
-                print("✅ Products created")
-            else:
-                # Update products without categoria_id
-                for prod in existing_products:
-                    if not prod.categoria_id:
-                        prod.categoria_id = "b7bee82b-312f-408b-bb1e-8e5d84e491b2"
-                await session.flush()
-                print("✅ Products updated with categories")
         else:
             # Use existing tenant
             tenant = existing_tenant
@@ -124,14 +116,6 @@ async def init_db():
                 delete(Categoria).where(Categoria.tenant_id == tenant.id)
             )
             await session.flush()
-                print("✅ Products created")
-            else:
-                # Update products without categoria_id
-                for prod in existing_products:
-                    if not prod.categoria_id:
-                        prod.categoria_id = "b7bee82b-312f-408b-bb1e-8e5d84e491b2"
-                await session.flush()
-                print("✅ Products updated with categories")
             
             # Now create fresh categories
             categorias = [
@@ -145,14 +129,6 @@ async def init_db():
                 cat = Categoria(id=cat_id, tenant_id=tenant.id, nombre=nombre)
                 session.add(cat)
             await session.flush()
-                print("✅ Products created")
-            else:
-                # Update products without categoria_id
-                for prod in existing_products:
-                    if not prod.categoria_id:
-                        prod.categoria_id = "b7bee82b-312f-408b-bb1e-8e5d84e491b2"
-                await session.flush()
-                print("✅ Products updated with categories")
             print("✅ Categories created")
 
             # Force create products if not exist
@@ -163,18 +139,17 @@ async def init_db():
             
             if len(existing_products) == 0:
                 print("🔄 Creating products...")
-                # Assign products to categories
                 productos = [
-                    {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25, "cat_id": "b7bee82b-312f-408b-bb1e-8e5d84e491b2"},
-                    {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60, "cat_id": "c7bee82b-312f-408b-bb1e-8e5d84e491b3"},
-                    {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100, "cat_id": "c7bee82b-312f-408b-bb1e-8e5d84e491b3"},
-                    {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80, "cat_id": "c7bee82b-312f-408b-bb1e-8e5d84e491b3"},
-                    {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48, "cat_id": "c7bee82b-312f-408b-bb1e-8e5d84e491b3"},
+                    {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
+                    {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
+                    {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40},
+                    {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20},
+                    {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15},
+                    {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25},
+                    {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60},
+                    {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100},
+                    {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
+                    {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
                 ]
 
                 for p in productos:
@@ -184,19 +159,10 @@ async def init_db():
                         nombre=p["nombre"],
                         precio_venta=p["precio_venta"],
                         precio_costo=p["precio_costo"],
-                        categoria_id=p["cat_id"],
                         estado="activo"
                     )
                     session.add(prod)
                     await session.flush()
-                print("✅ Products created")
-            else:
-                # Update products without categoria_id
-                for prod in existing_products:
-                    if not prod.categoria_id:
-                        prod.categoria_id = "b7bee82b-312f-408b-bb1e-8e5d84e491b2"
-                await session.flush()
-                print("✅ Products updated with categories")
 
                     inv = Inventario(
                         id=uuid4(),
