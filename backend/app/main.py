@@ -206,7 +206,7 @@ async def add_more_categories():
             result = await session.execute(text("SELECT COUNT(*) FROM categorias WHERE tenant_id = :t"), {"t": tenant_id})
             count = result.scalar()
             
-            if count <= 1:
+            if count < 10:
                 print("Adding more categories...")
                 
                 cat_ids = {}
