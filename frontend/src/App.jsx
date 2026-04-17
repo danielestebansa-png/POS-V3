@@ -5,7 +5,6 @@ import ReceiptModal from './components/ReceiptModal'
 import ProductSearch from './components/ProductSearch'
 import HistorialVentas from './components/HistorialVentas'
 import InformeDiario from './components/InformeDiario'
-import HistorialVentas from './components/HistorialVentas'
 
 const NOMBRE_TIENDA = "Mi Papelería"
 

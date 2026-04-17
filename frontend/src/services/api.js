@@ -16,3 +16,10 @@ export const getProductos = () => api.get('/api/productos/productos')
 export const getCategorias = () => api.get('/api/productos/categorias')
 export const createVenta = (data) => api.post('/api/ventas/ventas/', data)
 export const getVentas = () => api.get('/api/ventas/ventas/')
+
+// Product Manager functions
+export const crearProducto = (data) => api.post('/api/productos/productos', data)
+export const actualizarProducto = (id, data) => api.put(`/api/productos/productos/${id}`, data)
+export const eliminarProducto = (id) => api.delete(`/api/productos/productos/${id}`)
+export const getInventario = () => api.get('/api/productos/inventario/detalle')
+export const createAjuste = (data) => api.post('/api/productos/ajustes', data)

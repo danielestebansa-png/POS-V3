@@ -122,7 +122,7 @@ export default function InformeDiario() {
       <div className="bg-white rounded-lg shadow-sm border p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">📊 Comprobante de Informe Diario</h2>
-          <button onClick={() => exportCSV()} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">
+          <button onClick={() => window.print()} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">
             🖨️ Imprimir
           </button>
         </div>
