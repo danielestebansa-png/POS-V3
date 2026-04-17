@@ -477,6 +477,26 @@ function InventarioModule() {
     )}
 
 
+    {showModal && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+          <h2 className="text-xl font-bold mb-4">➕ Crear nuevo producto</h2>
+          <form onSubmit={handleCrearProducto} className="space-y-4">
+            <div><label className="block text-sm font-medium mb-1">Nombre *</label><input name="nombre" required className="w-full border rounded px-3 py-2"/></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Precio</label><input name="precio" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
+              <div><label className="block text-sm font-medium mb-1">Stock</label><input name="stock" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
+            </div>
+            <div className="flex gap-2 justify-end pt-4">
+              <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 border rounded text-gray-600">Cancelar</button>
+              <button type="submit" disabled={creando} className="px-4 py-2 bg-emerald-600 text-white rounded disabled:opacity-50">{creando ? 'Guardando...' : 'Crear'}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+
 function PortalClientes() {
   const [page, setPage] = useState('empresa')
   const menu = [
