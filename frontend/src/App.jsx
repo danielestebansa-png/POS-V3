@@ -394,9 +394,21 @@ function InventarioModule() {
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
   if (showModal) return (
-    <div className="p-8 text-center">
-      <p>MODAL HERE - click to close</p>
-      <button onClick={() => setShowModal(false)} className="bg-red-500 text-white p-2 rounded">Cerrar</button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
+        <div className="space-y-3">
+          <input placeholder="Nombre *" className="w-full border rounded px-3 py-2" name="nombre" />
+          <div className="grid grid-cols-2 gap-3">
+            <input placeholder="Precio" type="number" className="border rounded px-3 py-2" name="precio" />
+            <input placeholder="Stock" type="number" className="border rounded px-3 py-2" name="stock" />
+          </div>
+        </div>
+        <div className="flex gap-2 mt-4">
+          <button onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
+          <button onClick={() => {alert('Crear clicked!');setShowModal(false)}} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
+        </div>
+      </div>
     </div>
   )
 
