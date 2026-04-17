@@ -398,7 +398,16 @@ function InventarioModule() {
         <h2 className="text-xl font-bold text-gray-800">📦 Productos y Servicios</h2>
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
-          <button onClick={() => alert('Nuevo producto clicked!')} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
+          <button onClick={() => {
+          if (document.querySelector('input[name=nombre]').value) {
+            alert('✅ Producto creado: ' + document.querySelector('input[name=nombre]').value + ' (Demo)')
+            document.querySelector('input[name=nombre]').value = ''
+            document.querySelector('input[name=precio]').value = ''
+            document.querySelector('input[name=stock]').value = ''
+          } else {
+            alert('Escribe un nombre')
+          }
+        }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
         </div>
       </div>
       
