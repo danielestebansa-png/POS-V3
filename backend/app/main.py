@@ -65,8 +65,8 @@ app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 # DATABASE INIT
 # ============================================
 
-@app.on_event("startup")
-async def init_db():
+# @app.on_event("startup")
+async def init_db_disabled():
     """Initialize database tables and seed data if empty"""
     from app.core.database import Base, AsyncSessionLocal
     from app.modules.tenants.models import Tenant
