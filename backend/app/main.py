@@ -119,11 +119,11 @@ async def init_db():
             
             # Now create fresh categories
             categorias = [
-                ("Bebidas y Comidas", "b7bee82b-312f-408b-bb1e-8e5d84e491b2"),
-                ("Útiles Escolares", "c7bee82b-312f-408b-bb1e-8e5d84e491b3"),
-                ("Papelería", "d7bee82b-312f-408b-bb1e-8e5d84e491b4"),
-                ("Artes y Manualidades", "e7bee82b-312f-408b-bb1e-8e5d84e491b5"),
-                ("Tecnología", "f7bee82b-312f-408b-bb1e-8e5d84e491b6"),
+                ("Bebidas y Comidas", "11111111-1111-1111-1111-111111111111"),
+                ("Útiles Escolares", "22222222-2222-2222-2222-222222222222"),
+                ("Papelería", "33333333-3333-3333-3333-333333333333"),
+                ("Artes y Manualidades", "44444444-4444-4444-4444-444444444444"),
+                ("Tecnología", "55555555-5555-5555-5555-555555555555"),
             ]
             for nombre, cat_id in categorias:
                 cat = Categoria(id=cat_id, tenant_id=tenant.id, nombre=nombre)
