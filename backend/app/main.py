@@ -73,7 +73,7 @@ async def init_db():
     from app.modules.productos.models import User, Categoria, Producto, Inventario
     from app.modules.ventas.models import Caja, Venta, VentaDetalle
     from app.modules.productos.models import Cliente
-    from sqlalchemy import select
+    from sqlalchemy import select, delete
     from uuid import uuid4
 
     # Create tables
@@ -111,23 +111,25 @@ async def init_db():
             tenant = existing_tenant
             print("✅ Tenant already exists")
 
-            # Force create category if not exists
-            result_cat = await session.execute(
-                select(Categoria).where(Categoria.tenant_id == tenant.id)
+            # Clean up duplicate categories first
+            await session.execute(
+                delete(Categoria).where(Categoria.tenant_id == tenant.id)
             )
-            existing_cat = result_cat.scalars().first()
+            await session.flush()
             
-            if not existing_cat:
-                categoria = Categoria(
-                    id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
-                    tenant_id=tenant.id,
-                    nombre="Bebidas y Comidas"
-                )
-                session.add(categoria)
-                await session.flush()
-                print("✅ Category created")
-            else:
-                print("✅ Category already exists")
+            # Now create fresh categories
+            categorias = [
+                ("Bebidas y Comidas", "b7bee82b-312f-408b-bb1e-8e5d84e491b2"),
+                ("Útiles Escolares", "c7bee82b-312f-408b-bb1e-8e5d84e491b3"),
+                ("Papelería", "d7bee82b-312f-408b-bb1e-8e5d84e491b4"),
+                ("Artes y Manualidades", "e7bee82b-312f-408b-bb1e-8e5d84e491b5"),
+                ("Tecnología", "f7bee82b-312f-408b-bb1e-8e5d84e491b6"),
+            ]
+            for nombre, cat_id in categorias:
+                cat = Categoria(id=cat_id, tenant_id=tenant.id, nombre=nombre)
+                session.add(cat)
+            await session.flush()
+            print("✅ Categories created")
 
             # Force create products if not exist
             result_prod = await session.execute(
