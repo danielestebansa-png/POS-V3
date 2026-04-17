@@ -370,3 +370,27 @@ async def create_promocion(p: PromocionCreate, current_user: dict = Depends(get_
                    {"id": pid, "t": tid, "n": p.nombre, "tipo": p.tipo_descuento, "val": p.valor, "ini": p.fecha_inicio, "fin": p.fecha_fin, "est": p.estado})
     await db.commit()
     return {"id": pid, "message": "Promocion creada"}
+
+
+# Campos adicionales de productos
+class CampoAdicionalCreate(BaseModel):
+    nombre: str
+    tipo: str = "texto"
+    descripcion: str = ""
+    obligatorio: bool = False
+
+@router.get("/campos")
+async def get_campos(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    result = await db.execute(text("SELECT id, nombre, tipo, descripcion FROM productos_campos WHERE tenant_id = :t"), {"t": tid})
+    return [{"id": str(r[0]), "nombre": r[1], "tipo": r[2], "desc": r[3]} for r in result.fetchall()]
+
+@router.post("/campos", status_code=201)
+async def create_campo(c: CampoAdicionalCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    cid = str(uuid.uuid4())
+    await db.execute(text("INSERT INTO productos_campos (id, tenant_id, nombre, tipo, descripcion, obligatorio) VALUES (:id, :t, :n, :tipo, :desc, :obl)"),
+                   {"id": cid, "t": tid, "n": c.nombre, "tipo": c.tipo, "desc": c.descripcion, "obl": c.obligatorio})
+    await db.commit()
+    return {"id": cid, "message": "Campo creado"}
