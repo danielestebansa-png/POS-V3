@@ -110,6 +110,8 @@ function POSPortal() {
   }, []);
   
   const posMenu = [
+    { id: 'inicio', label: 'Inicio', icon: '🏠' },
+    { id: 'facturar', label: 'Facturar', icon: '📄' },
     { id: 'documentos', label: 'Documentos electrónicos', icon: '📧' },
     { id: 'ingresos', label: 'Ingresos', icon: '💰', submenu: [
       { id: 'historial_ventas', label: 'Historial de ventas' },
