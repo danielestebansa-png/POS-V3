@@ -1,6 +1,6 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/" }
+  "redirects": [
+    { "source": "/pos", "destination": "/", "permanent": false },
+    { "source": "/portal", "destination": "/", "permanent": false }
   ]
 }
