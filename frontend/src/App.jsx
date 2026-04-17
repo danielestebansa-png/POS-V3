@@ -496,9 +496,12 @@ function GestionInvModule() {
   
   // Read page from URL on mount
   useEffect(() => {
-    const hash = window.location.hash.replace('#/pos/gestion_inv/', '') || '';
-    // If just 'gestion_inv', keep default (variantes), otherwise use the sub-page
-    if (hash && hash !== 'gestion_inv' && hash !== '') setPage(hash);
+    const fullHash = window.location.hash || '';
+    const pageFromUrl = fullHash.replace('#/pos/gestion_inv/', '').replace('#/pos/gestion_inv', '') || '';
+    console.log('Full hash:', fullHash, 'Page:', pageFromUrl);
+    if (pageFromUrl && pageFromUrl !== page) {
+      setPage(pageFromUrl);
+    }
   }, [])
   
   const cards = [
@@ -525,10 +528,7 @@ function GestionInvModule() {
       <h2 className="text-xl font-bold">Gestión de Inventario</h2>
       <div className="grid gap-4">
         {cards.map(card => (
-          <div key={card.id} onClick={() => {
-          window.location.hash = '/pos/gestion_inv/' + card.id
-          setPage(card.id)
-        }} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
+          <div key={card.id} onClick={() => window.location.hash = '/pos/gestion_inv/' + card.id} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">{card.icono}</span>
               <h3 className="font-bold">{card.titulo}</h3>
