@@ -107,7 +107,15 @@ function POSPortal() {
   // Read page from URL hash on mount
   useEffect(() => {
     const hash = window.location.hash.replace('#/pos/', '') || 'facturar';
-    if (hash && hash !== currentPage) setCurrentPage(hash);
+    // Handle nested paths like gestion_inv/categorias
+    if (hash.includes('/')) {
+      const parts = hash.split('/');
+      setCurrentPage(parts[0]);
+      // For GestionInvModule, also set the sub-page
+      if (parts[0] === 'gestion_inv' && parts[1]) {
+        // Will be handled by the component
+      }
+    } else if (hash && hash !== currentPage) setCurrentPage(hash);
   }, []);
   
   const navigateTo = (page) => {
@@ -494,7 +502,7 @@ function GestionInvModule() {
   
   if (page !== 'variantes') return (
     <div className="p-4">
-      <button onClick={() => setPage('variantes')} className="text-emerald-600 mb-4">← Volver</button>
+      <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{page === 'categorias' ? '📁' : '📝'} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
       <p className="text-gray-500 mt-2">En construcción...</p>
     </div>
@@ -505,7 +513,10 @@ function GestionInvModule() {
       <h2 className="text-xl font-bold">Gestión de Inventario</h2>
       <div className="grid gap-4">
         {cards.map(card => (
-          <div key={card.id} onClick={() => setPage(card.id)} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
+          <div key={card.id} onClick={() => {
+          window.location.hash = '/pos/gestion_inv/' + card.id
+          setPage(card.id)
+        }} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">{card.icono}</span>
               <h3 className="font-bold">{card.titulo}</h3>
