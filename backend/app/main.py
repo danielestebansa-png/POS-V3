@@ -115,7 +115,7 @@ async def init_db():
             result_cat = await session.execute(
                 select(Categoria).where(Categoria.tenant_id == tenant.id)
             )
-            existing_cat = result_cat.scalar_one_or_none()
+            existing_cat = result_cat.scalars().first()
             
             if not existing_cat:
                 categoria = Categoria(
