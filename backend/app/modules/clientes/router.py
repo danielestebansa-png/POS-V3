@@ -75,3 +75,35 @@ async def delete_cliente(cliente_id: str, current_user: dict = Depends(get_curre
     return {"message": "Cliente eliminado"}
 
 print("Clientes router created")
+
+
+# Proveedores
+class ProveedorCreate(BaseModel):
+    nombre: str
+    identificacion: str = ""
+    telefono: str = ""
+    email: str = ""
+    direccion: str = ""
+
+@router.get("/proveedores")
+async def get_proveedores(buscar: str = "", current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    query = "SELECT id, nombre, identificacion, telefono, email, direccion FROM proveedores WHERE tenant_id = :t"
+    params = {"t": tid}
+    if buscar:
+        query += " AND (nombre ILIKE :b OR identificacion ILIKE :b)"
+        params["b"] = f"%{buscar}%"
+    query += " ORDER BY nombre LIMIT 30"
+    result = await db.execute(text(query), params)
+    return [{"id": str(r[0]), "nombre": r[1], "identificacion": r[2], "telefono": r[3], "email": r[4], "direccion": r[5]} for r in result.fetchall()]
+
+@router.post("/proveedores", status_code=201)
+async def create_proveedor(p: ProveedorCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    pid = str(uuid.uuid4())
+    await db.execute(text("INSERT INTO proveedores (id, tenant_id, nombre, identificacion, telefono, email, direccion) VALUES (:id, :t, :n, :i, :tel, :e, :d)"),
+                   {"id": pid, "t": tid, "n": p.nombre, "i": p.identificacion, "tel": p.telefono, "e": p.email, "d": p.direccion})
+    await db.commit()
+    return {"id": pid, "message": "Proveedor creado"}
+
