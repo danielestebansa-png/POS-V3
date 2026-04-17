@@ -69,3 +69,63 @@ async def create_tenant(
     await db.refresh(nuevo)
     
     return nuevo
+
+# Get tenant settings
+@router.get("/configuracion")
+async def get_config(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    result = await db.execute(
+        text("SELECT id, nombre, nit, direccion, telefono, email, timezone, plan, estado FROM tenants WHERE id = :tid"),
+        {"tid": tid}
+    )
+    row = result.fetchone()
+    
+    if not row:
+        return {"error": "Tenant no encontrado"}
+    
+    return {
+        "id": str(row[0]),
+        "nombre": row[1],
+        "nit": row[2],
+        "direccion": row[3],
+        "telefono": row[4],
+        "email": row[5],
+        "timezone": row[6],
+        "plan": row[7],
+        "estado": row[8]
+    }
+
+
+# Update tenant settings
+class TenantUpdate(BaseModel):
+    nombre: str = ""
+    nit: str = ""
+    direccion: str = ""
+    telefono: str = ""
+    email: str = ""
+    timezone: str = "America/Bogota"
+
+
+@router.put("/configuracion")
+async def update_config(config: TenantUpdate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    # Only update non-empty fields
+    await db.execute(
+        text("""UPDATE tenants SET 
+              nombre = COALESCE(NULLIF(:nombre, ''), nombre),
+              nit = COALESCE(NULLIF(:nit, ''), nit),
+              direccion = COALESCE(NULLIF(:direccion, ''), direccion),
+              telefono = COALESCE(NULLIF(:telefono, ''), telefono),
+              email = COALESCE(NULLIF(:email, ''), email),
+              updated_at = NOW()
+              WHERE id = :tid"""),
+        {"tid": tid, "nombre": config.nombre, "nit": config.nit, "direccion": config.direccion, 
+         "telefono": config.telefono, "email": config.email}
+    )
+    await db.commit()
+    
+    return {"message": "Configuración actualizada"}
+
+
