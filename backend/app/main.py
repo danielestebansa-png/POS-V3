@@ -14,9 +14,11 @@ from app.modules.productos.router import router as productos_router
 from app.modules.turnos.router import router as turnos_router
 from app.modules.clientes.router import router as clientes_router
 from app.modules.devoluciones.router import router as devoluciones_router
+from app.modules.efectivo.router import router as efectivo_router
 from app.modules.ventas.router import router as ventas_router
 from app.modules.clientes.router import router as clientes_router
 from app.modules.devoluciones.router import router as devoluciones_router
+from app.modules.efectivo.router import router as efectivo_router
 
 
 # ============================================
@@ -64,9 +66,11 @@ app.include_router(productos_router, prefix="/api/productos", tags=["Productos"]
 app.include_router(turnos_router, prefix="/api/turnos", tags=["turnos"])
 app.include_router(clientes_router, prefix="/api/clientes", tags=["clientes"])
 app.include_router(devoluciones_router, prefix="/api/devoluciones", tags=["devoluciones"])
+app.include_router(efectivo_router, prefix="/api/efectivo", tags=["efectivo"])
 app.include_router(ventas_router, prefix="/api/ventas", tags=["Ventas"])
 app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 app.include_router(devoluciones_router, prefix="/api/devoluciones", tags=["devoluciones"])
+app.include_router(efectivo_router, prefix="/api/efectivo", tags=["efectivo"])
 
 
 # ============================================
