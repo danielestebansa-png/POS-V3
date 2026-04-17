@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getProductos, getVentas, createVenta, crearProducto } from './services/api'
+import { getProductos, getVentas, createVenta } from './services/api'
 import ProductManager from './components/ProductManager'
 import PaymentModal from './components/PaymentModal'
 import ReceiptModal from './components/ReceiptModal'
@@ -367,8 +367,6 @@ function FacturarModule() {
 function InventarioModule() {
   const [productos, setProductos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [creando, setCreando] = useState(false)
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
@@ -400,7 +398,7 @@ function InventarioModule() {
         <h2 className="text-xl font-bold text-gray-800">📦 Productos y Servicios</h2>
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
-          <button onClick={() => setShowModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
+          <button onClick={() => alert('Nuevo producto clicked!')} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
         </div>
       </div>
       
@@ -455,47 +453,6 @@ function InventarioModule() {
     </div>
   )
 }
-
-
-    {showModal && (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-          <h2 className="text-xl font-bold mb-4">➕ Crear nuevo producto</h2>
-          <form onSubmit={handleCrearProducto} className="space-y-4">
-            <div><label className="block text-sm font-medium mb-1">Nombre *</label><input name="nombre" required className="w-full border rounded px-3 py-2"/></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-sm font-medium mb-1">Precio</label><input name="precio" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
-              <div><label className="block text-sm font-medium mb-1">Stock</label><input name="stock" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
-            </div>
-            <div className="flex gap-2 justify-end pt-4">
-              <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 border rounded text-gray-600">Cancelar</button>
-              <button type="submit" disabled={creando} className="px-4 py-2 bg-emerald-600 text-white rounded disabled:opacity-50">{creando ? 'Guardando...' : 'Crear'}</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    )}
-
-
-    {showModal && (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-          <h2 className="text-xl font-bold mb-4">➕ Crear nuevo producto</h2>
-          <form onSubmit={handleCrearProducto} className="space-y-4">
-            <div><label className="block text-sm font-medium mb-1">Nombre *</label><input name="nombre" required className="w-full border rounded px-3 py-2"/></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-sm font-medium mb-1">Precio</label><input name="precio" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
-              <div><label className="block text-sm font-medium mb-1">Stock</label><input name="stock" type="number" defaultValue="0" className="w-full border rounded px-3 py-2"/></div>
-            </div>
-            <div className="flex gap-2 justify-end pt-4">
-              <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 border rounded text-gray-600">Cancelar</button>
-              <button type="submit" disabled={creando} className="px-4 py-2 bg-emerald-600 text-white rounded disabled:opacity-50">{creando ? 'Guardando...' : 'Crear'}</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    )}
-
 
 function PortalClientes() {
   const [page, setPage] = useState('empresa')
