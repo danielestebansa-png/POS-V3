@@ -509,10 +509,10 @@ function GestionInvModule() {
   ]
   
   // Show subpage only if page is set to categorias or campos
-  if (page === 'categorias' || page === 'campos') return (
+  if (page === 'variantes' || page === 'categorias' || page === 'campos') return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
-      <h2 className="text-xl font-bold">{(page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
+      <h2 className="text-xl font-bold">{(page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
       <div className="bg-white rounded-lg border p-8 text-center">
         <p className="text-4xl mb-2">🎨</p>
         <p className="text-gray-500">¡Crea tu primera variante!</p>
