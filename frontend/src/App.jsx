@@ -505,13 +505,12 @@ function GestionInvModule() {
       <h2 className="text-xl font-bold">Gestión de Inventario</h2>
       <div className="grid gap-4">
         {cards.map(card => (
-          <div key={card.id} className="bg-white p-4 rounded-lg border shadow-sm">
+          <div key={card.id} onClick={() => setPage(card.id)} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">{card.icono}</span>
               <h3 className="font-bold">{card.titulo}</h3>
             </div>
-            <p className="text-gray-500 text-sm mb-3">{card.desc}</p>
-            <button onClick={() => setPage(card.id)} className="text-emerald-600 text-sm font-medium">Administrar →</button>
+            <p className="text-gray-500 text-sm">{card.desc}</p>
           </div>
         ))}
       </div>
