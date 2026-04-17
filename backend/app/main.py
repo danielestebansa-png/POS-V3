@@ -19,6 +19,7 @@ from app.modules.listas.router import router as listas_router
 from app.modules.bodegas.router import router as bodegas_router
 from app.modules.compras.router import router as compras_router
 from app.modules.ventas.router import router as ventas_router
+from app.modules.ventas.reportes import router as reportes_router
 from app.modules.clientes.router import router as clientes_router
 from app.modules.devoluciones.router import router as devoluciones_router
 from app.modules.efectivo.router import router as efectivo_router
@@ -77,6 +78,7 @@ app.include_router(listas_router, prefix="/api/listas", tags=["listas"])
 app.include_router(bodegas_router, prefix="/api/bodegas", tags=["bodegas"])
 app.include_router(compras_router, prefix="/api/compras", tags=["compras"])
 app.include_router(ventas_router, prefix="/api/ventas", tags=["Ventas"])
+app.include_router(reportes_router, prefix="/api/ventas", tags=["reportes"])
 app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 app.include_router(devoluciones_router, prefix="/api/devoluciones", tags=["devoluciones"])
 app.include_router(efectivo_router, prefix="/api/efectivo", tags=["efectivo"])
