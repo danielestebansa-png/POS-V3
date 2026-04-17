@@ -444,7 +444,7 @@ function InventarioModule() {
           <div className="flex-1 min-w-[200px]">
             <input 
               type="text" 
-              placeholder="🔍 Buscar" 
+              placeholder="🔍 Buscar variante" 
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
               className="w-full border rounded px-3 py-2 text-sm"
