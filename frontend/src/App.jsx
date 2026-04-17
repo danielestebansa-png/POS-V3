@@ -109,6 +109,11 @@ function POSPortal() {
     if (hash && hash !== currentPage) setCurrentPage(hash);
   }, []);
   
+  const navigateTo = (page) => {
+    window.location.hash = '/pos/' + page;
+    setCurrentPage(page);
+  }
+  
   const posMenu = [
     { id: 'inicio', label: 'Inicio', icon: '🏠' },
     { id: 'facturar', label: 'Facturar', icon: '📄' },
