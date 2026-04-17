@@ -154,6 +154,7 @@ function POSPortal() {
     if (currentPage === 'gestion_productos') return <ProductManager />
     if (currentPage === 'clientes') return <Clientes />
     if (currentPage === 'turnos') return <Turnos />
+    if (currentPage === 'gestion_inv') return <GestionInvModule />
     if (currentPage === 'configuraciones') return <Configuracion />
     return <Placeholder title={posMenu.find(m => m.id === currentPage)?.label || 'En construcción'} />
   }
@@ -477,6 +478,42 @@ function InventarioModule() {
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  )
+}
+
+function GestionInvModule() {
+  const [page, setPage] = useState('variantes')
+  
+  const cards = [
+    {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos como color, talla.', icono: '🎨'},
+    {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos en grupos.', icono: '📁'},
+    {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra.', icono: '📝'},
+  ]
+  
+  if (page !== 'variantes') return (
+    <div className="p-4">
+      <button onClick={() => setPage('variantes')} className="text-emerald-600 mb-4">← Volver</button>
+      <h2 className="text-xl font-bold">{page === 'categorias' ? '📁' : '📝'} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
+      <p className="text-gray-500 mt-2">En construcción...</p>
+    </div>
+  )
+  
+  return (
+    <div className="space-y-4 p-4">
+      <h2 className="text-xl font-bold">Gestión de Inventario</h2>
+      <div className="grid gap-4">
+        {cards.map(card => (
+          <div key={card.id} className="bg-white p-4 rounded-lg border shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">{card.icono}</span>
+              <h3 className="font-bold">{card.titulo}</h3>
+            </div>
+            <p className="text-gray-500 text-sm mb-3">{card.desc}</p>
+            <button onClick={() => setPage(card.id)} className="text-emerald-600 text-sm font-medium">Administrar →</button>
+          </div>
+        ))}
       </div>
     </div>
   )
