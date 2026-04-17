@@ -370,6 +370,7 @@ function InventarioModule() {
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -392,25 +393,40 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
+  if (showModal) return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
+        <div className="space-y-3">
+          <input placeholder="Nombre *" className="w-full border rounded px-3 py-2" name="nombre" />
+          <div className="grid grid-cols-2 gap-3">
+            <input placeholder="Precio" type="number" className="border rounded px-3 py-2" name="precio" />
+            <input placeholder="Stock" type="number" className="border rounded px-3 py-2" name="stock" />
+          </div>
+        </div>
+        <div className="flex gap-2 mt-4">
+          <button onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
+          <button onClick={() => {
+            const nombreInput = document.querySelector('input[name=nombre]')
+            if (nombreInput && nombreInput.value) {
+              alert('✅ Producto creado: ' + nombreInput.value + ' (Demo)')
+              setShowModal(false)
+            } else {
+              alert('Escribe un nombre')
+            }
+          }} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">📦 Productos y Servicios</h2>
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
-          <button onClick={() => {
-          const nombreInput = document.querySelector('input[name=nombre]')
-          if (nombreInput && nombreInput.value) {
-            alert('✅ Producto creado: ' + nombreInput.value + ' (Demo)')
-            nombreInput.value = ''
-            const precioInput = document.querySelector('input[name=precio]')
-            const stockInput = document.querySelector('input[name=stock]')
-            if (precioInput) precioInput.value = ''
-            if (stockInput) stockInput.value = ''
-          } else {
-            alert('Escribe un nombre')
-          }
-        }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
+          <button onClick={() => setShowModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
         </div>
       </div>
       
