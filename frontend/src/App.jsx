@@ -423,7 +423,7 @@ function InventarioModule() {
         </form>
         <div className="flex gap-2 mt-4">
           <button onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
-          <button onClick={guardarProducto} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
+          <button type="submit" className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
         </div>
       </div>
     </div>
