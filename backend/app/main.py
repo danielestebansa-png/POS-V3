@@ -117,7 +117,7 @@ async def init_db():
             )
             existing_cat = result_cat.scalar_one_or_none()
             
-            if not existing_cat:
+            if True: # Force create all categories
                 categoria = Categoria(
                     id="d7bee82b-312f-408b-bb1e-8e5d84e491b2",
                     tenant_id=tenant.id,
@@ -135,7 +135,7 @@ async def init_db():
             )
             existing_products = result_prod.scalars().all()
             
-            if len(existing_products) == 0:
+            if len(existing_products) < 30:
                 print("🔄 Creating products...")
                 productos = [
                     {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
