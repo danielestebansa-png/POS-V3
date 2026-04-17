@@ -507,8 +507,39 @@ function GestionInvModule() {
     {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra.', icono: '📝'},
   ]
   
-  // Show subpage only if page is set to categorias or campos
-  if (page === 'categorias' || page === 'campos') return (
+  // Show Variantes subpage
+  if (page === 'variantes' || page === 'categorias' || page === 'campos') return (
+    <div className="p-4 space-y-4">
+      <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
+      
+      <div>
+        <h2 className="text-xl font-bold">
+          {page === 'variantes' ? '🎨 Variantes' : page === 'categorias' ? '📁 Categorías' : '📝 Campos adicionales'}
+        </h2>
+        <p className="text-gray-500 text-sm mt-1">
+          {page === 'variantes' ? 'Crea variantes para agrupar productos según atributos como color, talla.' :
+           page === 'categorias' ? 'Organiza productos en grupos para mejor gestión.' :
+           'Personaliza información extra para cada producto.'}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <input 
+          placeholder="🔍 Buscar" 
+          className="flex-1 border rounded px-3 py-2"
+        />
+        <button className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">
+          + Nueva variante
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg border p-8 text-center">
+        <p className="text-4xl mb-2">🎨</p>
+        <p className="text-gray-500">¡Crea tu primera variante!</p>
+        <p className="text-gray-400 text-sm mt-1">Crea variantes para agrupar tus productos según su clase o tipo.</p>
+      </div>
+    </div>
+  )
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{(page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
