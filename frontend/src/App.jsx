@@ -494,6 +494,12 @@ function InventarioModule() {
 function GestionInvModule() {
   const [page, setPage] = useState('variantes')
   
+  // Read page from URL on mount
+  useEffect(() => {
+    const hash = window.location.hash.replace('#/pos/gestion_inv/', '') || '';
+    if (hash && hash !== 'gestion_inv') setPage(hash);
+  }, [])
+  
   const cards = [
     {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos como color, talla.', icono: '🎨'},
     {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos en grupos.', icono: '📁'},
