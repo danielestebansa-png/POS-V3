@@ -406,10 +406,13 @@ function InventarioModule() {
       const r = await getProductos()
       setProductos(r.data || [])
       setShowModal(false)
-    } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message))
     }
-  }
+    // Show success
+    alert('Producto creado correctamente!')
+    setFormData({nombre: '', precio: '', stock: ''})
+    const r = await getProductos()
+    setProductos(r.data || [])
+    setShowModal(false)
 
   if (showModal) return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
