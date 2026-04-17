@@ -1,6 +1,5 @@
 {
-  "redirects": [
-    { "source": "/pos", "destination": "/", "permanent": false },
-    { "source": "/portal", "destination": "/", "permanent": false }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
