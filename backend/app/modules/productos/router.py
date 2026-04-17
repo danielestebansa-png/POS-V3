@@ -394,3 +394,21 @@ async def create_campo(c: CampoAdicionalCreate, current_user: dict = Depends(get
                    {"id": cid, "t": tid, "n": c.nombre, "tipo": c.tipo, "desc": c.descripcion, "obl": c.obligatorio})
     await db.commit()
     return {"id": cid, "message": "Campo creado"}
+
+
+# Variantes de productos  
+@router.get("/variantes")
+async def get_variantes(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    r = await db.execute(text("SELECT id, nombre, opciones FROM productos_variantes WHERE tenant_id = :t"), {"t": tid})
+    return [{"id": str(x[0]), "nombre": x[1], "opciones": x[2]} for x in r.fetchall()]
+
+@router.post("/variantes")
+async def create_variante(data: dict, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    vid = str(uuid.uuid4())
+    await db.execute(text("INSERT INTO productos_variantes (id, tenant_id, nombre, opciones) VALUES (:id, :t, :n, :o)"),
+                   {"id": vid, "t": tid, "n": data.get("nombre", ""), "o": data.get("opciones", "")})
+    await db.commit()
+    return {"id": vid, "message": "Variante creada"}
