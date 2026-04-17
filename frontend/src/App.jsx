@@ -393,19 +393,15 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
-  const guardarProducto = async (e) => {
-    e.preventDefault()
-    const form = e.target
-    const nombre = form.nombre?.value || ''
-    const precio = parseFloat(form.precio?.value) || 0
-    const stock = parseInt(form.stock?.value) || 0
-    if (!nombre) { alert('Nombre requerido'); return }
+  const guardarProducto = async () => {
+    if (!formData.nombre) { alert('Nombre requerido'); return }
     try {
       await crearProducto({
-        nombre: nombre,
-        precio_venta: precio,
-        stock: stock,
+        nombre: formData.nombre,
+        precio_venta: parseFloat(formData.precio) || 0,
+        stock: parseInt(formData.stock) || 0,
       })
+      setFormData({nombre: '', precio: '', stock: ''})
       const r = await getProductos()
       setProductos(r.data || [])
       setShowModal(false)
@@ -419,10 +415,27 @@ function InventarioModule() {
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
         <form onSubmit={guardarProducto} className="space-y-3">
-          <input placeholder="Nombre *" className="w-full border rounded px-3 py-2" name="nombre" />
+          <input 
+            placeholder="Nombre *" 
+            className="w-full border rounded px-3 py-2" 
+            value={formData.nombre}
+            onChange={e => setFormData({...formData, nombre: e.target.value})}
+          />
           <div className="grid grid-cols-2 gap-3">
-            <input placeholder="Precio" type="number" className="border rounded px-3 py-2" name="precio" />
-            <input placeholder="Stock" type="number" className="border rounded px-3 py-2" name="stock" />
+            <input 
+              placeholder="Precio" 
+              type="number" 
+              className="border rounded px-3 py-2" 
+              value={formData.precio}
+              onChange={e => setFormData({...formData, precio: e.target.value})}
+            />
+            <input 
+              placeholder="Stock" 
+              type="number" 
+              className="border rounded px-3 py-2" 
+              value={formData.stock}
+              onChange={e => setFormData({...formData, stock: e.target.value})}
+            />
           </div>
           <div className="flex gap-2 mt-4">
             <button type="button" onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
