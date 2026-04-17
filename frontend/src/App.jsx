@@ -398,10 +398,13 @@ function InventarioModule() {
   useEffect(() => {
     (async () => {
       try {
+        console.log('Loading productos...');
         const [prodRes, catRes] = await Promise.all([getProductos(), getCategorias()]);
+        console.log('Got productos:', prodRes.data?.length);
         setProductos(prodRes.data || [])
         setCategorias(catRes.data || [])
       } catch (err) {
+        console.error('Error loading:', err);
         setError(err.message)
       } finally {
         setLoading(false)
@@ -415,7 +418,6 @@ function InventarioModule() {
   )
 
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
-  if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
   return (
     <div className="space-y-4">
@@ -428,6 +430,7 @@ function InventarioModule() {
       </div>
       
       <div className="bg-white p-4 rounded-lg shadow-sm border">
+        {error && <div className="bg-red-50 text-red-600 p-2 rounded mb-2 text-sm">❌ {error}</div>}
         <div className="flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <input 
