@@ -365,16 +365,31 @@ function FacturarModule() {
 
 function InventarioModule() {
   const [productos, setProductos] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
 
-  useEffect(() => { (async () => { setLoading(true); try { const r = await getProductos(); if (r.data) setProductos(r.data) } finally { setLoading(false) } })() }, [])
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await getProductos();
+        setProductos(r.data || [])
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [])
 
   const productosFiltrados = productos.filter(p => 
     p.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
     p.referencia?.toLowerCase().includes(busqueda.toLowerCase())
   )
+
+  if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
+  if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
   return (
     <div className="space-y-4">
