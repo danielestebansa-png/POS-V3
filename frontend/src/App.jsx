@@ -149,7 +149,7 @@ function POSPortal() {
     if (currentPage === 'inventario') return <InventarioModule />
     if (currentPage === 'historial_ventas') return <HistorialVentas />
     if (currentPage === 'informe_diario') return <InformeDiario />
-    if (currentPage === 'productos_servicios') return <Inventario />
+    if (currentPage === 'productos_servicios') return <InventarioModule />
     if (currentPage === 'gestion_productos') return <ProductManager />
     if (currentPage === 'clientes') return <Clientes />
     if (currentPage === 'turnos') return <Turnos />
