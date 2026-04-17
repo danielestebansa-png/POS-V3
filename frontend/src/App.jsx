@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getProductos, getVentas, createVenta, crearProducto } from './services/api'
+import { getProductos, getVentas, createVenta } from './services/api'
 import ProductManager from './components/ProductManager'
 import PaymentModal from './components/PaymentModal'
 import ReceiptModal from './components/ReceiptModal'
@@ -367,8 +367,6 @@ function FacturarModule() {
 function InventarioModule() {
   const [productos, setProductos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [formData, setFormData] = useState({nombre: '', precio: '', stock: ''})
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
@@ -394,69 +392,13 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
-  const guardarProducto = async () => {
-    if (!formData.nombre) { alert('Nombre requerido'); return }
-    try {
-      await crearProducto({
-        nombre: formData.nombre,
-        precio_venta: parseFloat(formData.precio) || 0,
-        stock: parseInt(formData.stock) || 0,
-      })
-      setFormData({nombre: '', precio: '', stock: ''})
-      const r = await getProductos()
-      setProductos(r.data || [])
-      setShowModal(false)
-    }
-    // Show success
-    alert('Producto creado correctamente!')
-    setFormData({nombre: '', precio: '', stock: ''})
-    const r = await getProductos()
-    setProductos(r.data || [])
-    setShowModal(false)
-
-  if (showModal) return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
-        <form onSubmit={guardarProducto} className="space-y-3">
-          <input 
-            placeholder="Nombre *" 
-            className="w-full border rounded px-3 py-2" 
-            value={formData.nombre}
-            onChange={e => setFormData({...formData, nombre: e.target.value})}
-          />
-          <div className="grid grid-cols-2 gap-3">
-            <input 
-              placeholder="Precio" 
-              type="number" 
-              className="border rounded px-3 py-2" 
-              value={formData.precio}
-              onChange={e => setFormData({...formData, precio: e.target.value})}
-            />
-            <input 
-              placeholder="Stock" 
-              type="number" 
-              className="border rounded px-3 py-2" 
-              value={formData.stock}
-              onChange={e => setFormData({...formData, stock: e.target.value})}
-            />
-          </div>
-          <div className="flex gap-2 mt-4">
-            <button type="button" onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
-            <button type="button" onClick={guardarProducto} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">📦 Productos y Servicios</h2>
         <div className="flex gap-2">
           <button className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">📥 Importar productos</button>
-          <button onClick={() => setShowModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
+          <button onClick={() => alert('Nuevo producto clicked!')} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm hover:bg-emerald-700">+ Nuevo producto</button>
         </div>
       </div>
       
