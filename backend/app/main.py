@@ -2,7 +2,7 @@
 # FASTAPI MAIN APPLICATION
 # ============================================
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import async_engine
@@ -241,3 +241,40 @@ async def add_more_categories():
                 print(f"Added {len(categorias)} categories and {len(productos)} products")
         except Exception as e:
             print(f"Seed error: {e}")
+
+
+# ============================================
+# Simple seed endpoint
+# ============================================
+@app.post("/api/seed")
+async def trigger_seed(db: AsyncSession = Depends(get_db)):
+    """Manually trigger seed"""
+    from sqlalchemy import text
+    from uuid import uuid4
+    
+    tenant_id = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
+    
+    # Create categories
+    cat_ids = {}
+    categorias = ["Útiles Escolares", "Papelería", "Artes y Manualidades", "Tecnología"]
+    for cat_nombre in categorias:
+        cat_id = str(uuid4())
+        cat_ids[cat_nombre] = cat_id
+        await db.execute(
+            text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, NULL, 'activo', NOW(), NOW())"),
+            {"id": cat_id, "tenant": tenant_id, "nombre": cat_nombre}
+        )
+    
+    # Products
+    productos = [("Cuaderno College", 8500, 45), ("Lápices colores", 12000, 30), ("Borrador", 1500, 100), ("Sacapuntas", 3500, 25), ("Regla 30cm", 2500, 40), ("Carpeta", 5500, 35), ("Papel Bond", 18000, 20), ("Clips", 2500, 50), ("Grapadora", 12000, 15), ("Tijeras", 4500, 25), ("Pintura", 15000, 18), ("Pinceles", 8000, 22), ("Cartulina", 6000, 40), ("Pegamento", 3500, 60), ("Fomi", 4000, 35), ("Cable USB", 15000, 28), ("Mouse", 25000, 12), ("Teclado", 35000, 8), ("Audífonos", 18000, 15), ("Pendrive", 22000, 20)]
+    for nombre, precio, stock in productos:
+        prod_id = str(uuid4())
+        cat_idx = productos.index((nombre, precio, stock))
+        cat = list(cat_ids.keys())[cat_idx // 5]
+        await db.execute(
+            text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, stock, categoria_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :precio, :costo, :stock, :cat, 'activo', NOW(), NOW())"),
+            {"id": prod_id, "tenant": tenant_id, "nombre": nombre, "precio": precio, "costo": precio*0.5, "stock": stock, "cat": cat_ids[cat]}
+        )
+    
+    await db.commit()
+    return {"message": f"Created {len(categorias)} categories and {len(productos)} products"}
