@@ -130,7 +130,7 @@ function POSPortal() {
                         const el = document.getElementById(`submenu-${idx}`)
                         el.classList.toggle('hidden')
                       } else {
-                        setCurrentPage(item.id)
+                        setCurrentPage(item.id); window.location.hash = '/pos/' + item.id
                         setMenuOpen(false)
                       }
                     }}
@@ -144,7 +144,7 @@ function POSPortal() {
                       {item.submenu.map(sub => (
                         <button 
                           key={sub.id}
-                          onClick={() => { setCurrentPage(sub.id); setMenuOpen(false) }}
+                          onClick={() => { setCurrentPage(sub.id); window.location.hash = '/pos/' + sub.id; setMenuOpen(false) }}
                           className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-100"
                         >
                           {sub.label}
