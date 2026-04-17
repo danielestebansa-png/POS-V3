@@ -75,6 +75,7 @@ async def init_db():
     from app.modules.productos.models import Cliente
     from sqlalchemy import select
     from uuid import uuid4
+    import asyncio
 
     # Create tables
     async with async_engine.begin() as conn:
@@ -183,3 +184,61 @@ async def init_db():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# ============================================
+# Add more categories and products
+# ============================================
+@app.on_event("startup")
+async def add_more_categories():
+    """Add additional categories"""
+    await asyncio.sleep(5)  # Wait for app to be ready
+    
+    from app.core.database import AsyncSessionLocal
+    from sqlalchemy import select, text
+    from uuid import uuid4
+    import asyncio
+    
+    async with AsyncSessionLocal() as session:
+        try:
+            tenant_id = "4a7e815e-f68e-46f4-863d-1d2f786301e8"
+            
+            # Check if we already have more than 1 category
+            result = await session.execute(text("SELECT COUNT(*) FROM categorias WHERE tenant_id = :t"), {"t": tenant_id})
+            count = result.scalar()
+            
+            if count <= 1:
+                print("Adding more categories...")
+                
+                # Create 4 main categories
+                cat_ids = {}
+                categorias = ["Útiles Escolares", "Papelería", "Artes y Manualidades", "Tecnología"]
+                for cat_nombre in categorias:
+                    cat_id = str(uuid4())
+                    cat_ids[cat_nombre] = cat_id
+                    await session.execute(
+                        text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, NULL, 'activo', NOW(), NOW())"),
+                        {"id": cat_id, "tenant": tenant_id, "nombre": cat_nombre}
+                    )
+                
+                # Subcategorías
+                subcategorias = [("Cuadernos", "Útiles Escolares"), ("Lápices y Colores", "Útiles Escolares"), ("Carpetas", "Papelería"), ("Papel Bond", "Papelería")]
+                for sub_nombre, padre_nombre in subcategorias:
+                    sub_id = str(uuid4())
+                    await session.execute(
+                        text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :padre, 'activo', NOW(), NOW())"),
+                        {"id": sub_id, "tenant": tenant_id, "nombre": sub_nombre, "padre": cat_ids[padre_nombre]}
+                    )
+                
+                # Products
+                productos = [("Cuaderno College", 8500, 45), ("Lápices colores", 12000, 30), ("Borrador", 1500, 100), ("Sacapuntas", 3500, 25), ("Regla 30cm", 2500, 40)]
+                for nombre, precio, stock in productos:
+                    prod_id = str(uuid4())
+                    await session.execute(
+                        text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, stock, categoria_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :precio, :costo, :stock, :cat, 'activo', NOW(), NOW())"),
+                        {"id": prod_id, "tenant": tenant_id, "nombre": nombre, "precio": precio, "costo": precio*0.5, "stock": stock, "cat": cat_ids["Útiles Escolares"]}
+                    )
+                
+                await session.commit()
+                print(f"✅ Added {len(categorias)} categories and {len(productos)} products")
+        except Exception as e:
+            print(f"Error adding categories: {e}")
