@@ -140,30 +140,31 @@ async def init_db():
             if len(existing_products) == 0:
                 print("🔄 Creating products...")
                 productos = [
-                    {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50},
-                    {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30},
-                    {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40},
-                    {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20},
-                    {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15},
-                    {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25},
-                    {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60},
-                    {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100},
-                    {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80},
-                    {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48},
+                    {"nombre": "Café Americano", "precio_venta": 2500, "precio_costo": 1200, "stock": 50, "cat": "b7bee82b"},
+                    {"nombre": "Café Latte", "precio_venta": 3500, "precio_costo": 1800, "stock": 30, "cat": "b7bee82b"},
+                    {"nombre": "Te Verde", "precio_venta": 2500, "precio_costo": 1000, "stock": 40, "cat": "b7bee82b"},
+                    {"nombre": "Jugo Natural", "precio_venta": 4500, "precio_costo": 2000, "stock": 20, "cat": "b7bee82b"},
+                    {"nombre": "Sandwich", "precio_venta": 6500, "precio_costo": 3000, "stock": 15, "cat": "b7bee82b"},
+                    {"nombre": "Croissant", "precio_venta": 2500, "precio_costo": 1000, "stock": 25, "cat": "b7bee82b"},
+                    {"nombre": "Galletas", "precio_venta": 1500, "precio_costo": 500, "stock": 60, "cat": "c7bee82b"},
+                    {"nombre": "Agua Mineral", "precio_venta": 1500, "precio_costo": 500, "stock": 100, "cat": "c7bee82b"},
+                    {"nombre": "Gaseosa", "precio_venta": 2000, "precio_costo": 800, "stock": 80, "cat": "c7bee82b"},
+                    {"nombre": "Cerveza", "precio_venta": 4000, "precio_costo": 1800, "stock": 48, "cat": "c7bee82b"},
                 ]
 
                 for p in productos:
+                    cat_uuid = f"{p['cat']}-312f-408b-bb1e-8e5d84e491b2"[:36]
                     prod = Producto(
                         id=uuid4(),
                         tenant_id=tenant.id,
                         nombre=p["nombre"],
                         precio_venta=p["precio_venta"],
                         precio_costo=p["precio_costo"],
+                        categoria_id=cat_uuid,
                         estado="activo"
                     )
                     session.add(prod)
                     await session.flush()
-
                     inv = Inventario(
                         id=uuid4(),
                         tenant_id=tenant.id,
@@ -175,7 +176,12 @@ async def init_db():
                 await session.commit()
                 print("✅ Seed complete!")
             else:
-                print(f"✅ Products already exist: {len(existing_products)}")
+                # Update existing products without categoria_id
+                for prod in existing_products:
+                    if not prod.categoria_id:
+                        prod.categoria_id = "b7bee82b-312f-408b-bb1e-8e5d84e491b2"
+                await session.commit()
+                print(f"✅ Products updated with categories: {len(existing_products)}")
 
 
 # ============================================
