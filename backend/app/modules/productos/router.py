@@ -214,3 +214,29 @@ async def create_categoria(categoria: CategoriaCreate, current_user: dict = Depe
     await db.commit()
     
     return {"id": cid, "message": "Categoría creada"}
+
+
+# Cleanup duplicate categories
+@router.post("/categorias/cleanup")
+async def cleanup_categorias(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    # Delete all categories and recreate clean
+    await db.execute(text("DELETE FROM categorias WHERE tenant_id = :t"), {"t": tid})
+    
+    # Create clean categories
+    cats = [
+        ("Bebidas y Comidas", "b7bee82b-312f-408b-bb1e-8e5d84e491b2"),
+        ("Útiles Escolares", "c7bee82b-312f-408b-bb1e-8e5d84e491b3"),
+        ("Papelería", "d7bee82b-312f-408b-bb1e-8e5d84e491b4"),
+        ("Artes y Manualidades", "e7bee82b-312f-408b-bb1e-8e5d84e491b5"),
+        ("Tecnología", "f7bee82b-312f-408b-bb1e-8e5d84e491b6"),
+    ]
+    for nom, cid in cats:
+        await db.execute(
+            text("INSERT INTO categorias (id, tenant_id, nombre, estado) VALUES (:id, :t, :nom, 'activo')"),
+            {"id": cid, "t": tid, "nom": nom}
+        )
+    await db.commit()
+    
+    return {"message": "Categorías limpiadas"}
