@@ -240,3 +240,107 @@ async def cleanup_categorias(current_user: dict = Depends(get_current_user), db:
     await db.commit()
     
     return {"message": "Categorías limpiadas"}
+
+
+# Inventory Adjustment Model
+class InventarioAjuste(BaseModel):
+    producto_id: str
+    cantidad_anterior: int
+    cantidad_nueva: int
+    observaciones: str = ""
+    tipo: str = "ajuste"  # ajuste, entrada, salida
+
+
+@router.post("/ajustes", status_code=201)
+async def create_ajuste(ajuste: InventarioAjuste, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    aid = str(uuid.uuid4())
+    
+    diff = ajuste.cantidad_nueva - ajuste.cantidad_anterior
+    
+    # Update inventory
+    await db.execute(
+        text("""UPDATE inventario SET cantidad = :nueva WHERE producto_id = :pid AND tenant_id = :tid"""),
+        {"pid": ajuste.producto_id, "tid": tid, "nueva": ajuste.cantidad_nueva}
+    )
+    
+    # Record movement
+    await db.execute(
+        text("""INSERT INTO inventario_movimientos (id, tenant_id, producto_id, tipo, cantidad, observaciones, created_at)
+              VALUES (:id, :tid, :pid, :tipo, :cant, :obs, NOW())"""),
+        {"id": aid, "tid": tid, "pid": ajuste.producto_id, "tipo": ajuste.tipo, "cant": diff, "obs": ajuste.observaciones}
+    )
+    await db.commit()
+    
+    return {"message": "Ajuste registrado", "diferencia": diff}
+
+
+@router.get("/ajustes")
+async def get_ajustes(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    result = await db.execute(
+        text("""SELECT im.id, im.producto_id, p.nombre, im.tipo, im.cantidad, im.observaciones, im.created_at
+              FROM inventario_movimientos im
+              JOIN productos p ON p.id = im.producto_id
+              WHERE im.tenant_id = :tid
+              ORDER BY im.created_at DESC
+              LIMIT 50"""),
+        {"tid": tid}
+    )
+    
+    return [{
+        "id": str(r[0]),
+        "producto_id": str(r[1]),
+        "producto": r[2],
+        "tipo": r[3],
+        "cantidad": r[4],
+        "observaciones": r[5],
+        "fecha": str(r[6])
+    } for r in result.fetchall()]
+
+
+# Get inventory with all details
+@router.get("/inventario/detalle")
+async def get_inventario_detalle(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    result = await db.execute(
+        text("""SELECT p.id, p.nombre, p.codigo, p.precio_venta, p.precio_costo, 
+                     COALESCE(i.cantidad, 0) as stock, c.nombre as categoria
+              FROM productos p
+              LEFT JOIN inventario i ON i.producto_id = p.id AND i.tenant_id = p.tenant_id
+              LEFT JOIN categorias c ON c.id = p.categoria_id AND c.tenant_id = p.tenant_id
+              WHERE p.tenant_id = :tid AND p.estado = 'activo'
+              ORDER BY p.nombre"""),
+        {"tid": tid}
+    )
+    
+    productos = []
+    total_valor = 0
+    
+    for r in result.fetchall():
+        stock = r[5] or 0
+        costo = r[4] or 0
+        valor = stock * costo
+        total_valor += valor
+        
+        productos.append({
+            "id": str(r[0]),
+            "nombre": r[1],
+            "codigo": r[2],
+            "precio_venta": float(r[3] or 0),
+            "precio_costo": float(costo),
+            "stock": stock,
+            "categoria": r[6],
+            "valor_total": valor
+        })
+    
+    return {
+        "productos": productos,
+        "total_items": len(productos),
+        "valor_total_inventario": total_valor
+    }
+
+
