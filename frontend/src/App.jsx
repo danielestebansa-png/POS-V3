@@ -16,7 +16,10 @@ export default function App() {
   
   useEffect(() => {
     const path = window.location.hash.replace('#', '') || window.location.pathname
-    if (path.startsWith('/pos')) setPortal('pos')
+    if (path.startsWith('/pos')) {
+      setPortal('pos');
+      if (path === '/pos' || path === '/pos/') window.location.hash = '/pos/facturar';
+    }
     else if (path.startsWith('/portal')) setPortal('portal')
     else setPortal('inicio')
   }, [])
@@ -51,6 +54,46 @@ function Dashboard({ onNavigate }) {
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-emerald-600">💰</div><p className="text-2xl font-bold">$125,000</p><p className="text-gray-500 text-sm">Ventas Hoy</p></div>
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">📦</div><p className="text-2xl font-bold">10</p><p className="text-gray-500 text-sm">Productos</p></div>
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">👥</div><p className="text-2xl font-bold">5</p><p className="text-gray-500 text-sm">Clientes</p></div>
+      </div>
+    </div>
+  )
+}
+
+function MiniDashboard({ onNavigate }) {
+  return (
+    <div className="space-y-6 p-4">
+      <h1 className="text-2xl font-bold text-emerald-700">🏠Bienvenido a Mi Papelería</h1>
+      <div className="grid grid-cols-2 gap-4">
+        <button onClick={() => onNavigate('facturar')} className="bg-emerald-600 text-white p-6 rounded-xl hover:bg-emerald-700 transition text-left">
+          <div className="text-3xl mb-2">📄</div>
+          <div className="text-xl font-bold">Facturar</div>
+          <p className="text-emerald-200 text-sm">Nueva venta</p>
+        </button>
+        <button onClick={() => onNavigate('inventario')} className="bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700 transition text-left">
+          <div className="text-3xl mb-2">📦</div>
+          <div className="text-xl font-bold">Inventario</div>
+          <p className="text-blue-200 text-sm">Gestionar productos</p>
+        </button>
+        <button onClick={() => onNavigate('clientes')} className="bg-purple-600 text-white p-6 rounded-xl hover:bg-purple-700 transition text-left">
+          <div className="text-3xl mb-2">👥</div>
+          <div className="text-xl font-bold">Clientes</div>
+          <p className="text-purple-200 text-sm">Gestionar clientes</p>
+        </button>
+        <button onClick={() => onNavigate('turnos')} className="bg-orange-600 text-white p-6 rounded-xl hover:bg-orange-700 transition text-left">
+          <div className="text-3xl mb-2">⏰</div>
+          <div className="text-xl font-bold">Turnos</div>
+          <p className="text-orange-200 text-sm">Abrir/Cerrar turno</p>
+        </button>
+        <button onClick={() => onNavigate('historial_ventas')} className="bg-gray-600 text-white p-6 rounded-xl hover:bg-gray-700 transition text-left">
+          <div className="text-3xl mb-2">📊</div>
+          <div className="text-xl font-bold">Historial</div>
+          <p className="text-gray-200 text-sm">Ver ventas</p>
+        </button>
+        <button onClick={() => onNavigate('configuraciones')} className="bg-gray-500 text-white p-6 rounded-xl hover:bg-gray-600 transition text-left">
+          <div className="text-3xl mb-2">⚙️</div>
+          <div className="text-xl font-bold">Config</div>
+          <p className="text-gray-200 text-sm">Ajustes</p>
+        </button>
       </div>
     </div>
   )
@@ -94,6 +137,7 @@ function POSPortal() {
   ]
 
   const renderContent = () => {
+    if (currentPage === 'inicio') return <MiniDashboard onNavigate={navigateTo} />
     if (currentPage === 'facturar') return <FacturarModule />
     if (currentPage === 'inventario') return <InventarioModule />
     if (currentPage === 'historial_ventas') return <HistorialVentas />
