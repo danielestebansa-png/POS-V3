@@ -396,17 +396,21 @@ function InventarioModule() {
   const guardarProducto = async (e) => {
     e.preventDefault()
     const form = e.target
+    const nombre = form.nombre?.value || ''
+    const precio = parseFloat(form.precio?.value) || 0
+    const stock = parseInt(form.stock?.value) || 0
+    if (!nombre) { alert('Nombre requerido'); return }
     try {
       await crearProducto({
-        nombre: form.nombre.value,
-        precio_venta: parseFloat(form.precio.value) || 0,
-        stock: parseInt(form.stock.value) || 0,
+        nombre: nombre,
+        precio_venta: precio,
+        stock: stock,
       })
       const r = await getProductos()
       setProductos(r.data || [])
       setShowModal(false)
     } catch (err) {
-      alert('Error: ' + err.message)
+      alert('Error: ' + (err.response?.data?.detail || err.message))
     }
   }
 
