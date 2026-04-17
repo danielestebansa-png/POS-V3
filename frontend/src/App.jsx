@@ -497,7 +497,8 @@ function GestionInvModule() {
   // Read page from URL on mount
   useEffect(() => {
     const hash = window.location.hash.replace('#/pos/gestion_inv/', '') || '';
-    if (hash && hash !== 'gestion_inv') setPage(hash);
+    // If just 'gestion_inv', keep default (variantes), otherwise use the sub-page
+    if (hash && hash !== 'gestion_inv' && hash !== '') setPage(hash);
   }, [])
   
   const cards = [
@@ -506,10 +507,11 @@ function GestionInvModule() {
     {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra.', icono: '📝'},
   ]
   
-  if (page !== 'variantes') return (
+  // Show subpage only if page is set to categorias or campos
+  if (page === 'categorias' || page === 'campos') return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
-      <h2 className="text-xl font-bold">{page === 'categorias' ? '📁' : '📝'} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
+      <h2 className="text-xl font-bold">{(page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
       <p className="text-gray-500 mt-2">En construcción...</p>
     </div>
   )
