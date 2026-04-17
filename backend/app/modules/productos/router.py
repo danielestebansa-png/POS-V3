@@ -135,10 +135,10 @@ async def get_categorias(current_user: dict = Depends(get_current_user), db: Asy
 class ProductoCreate(BaseModel):
     nombre: str
     precio_venta: float
-    precio_costo: Optional[float] = None
-    stock: Optional[int] = 0
-    categoria_id: Optional[str] = None
-    codigo: Optional[str] = None
+    precio_costo: float = 0.0
+    stock: int = 0
+    categoria_id: str = ""
+    codigo: str = ""
     estado: str = "activo"
 
 
