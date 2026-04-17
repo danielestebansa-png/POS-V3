@@ -71,6 +71,54 @@ export default function Inventario({ onVolver }) {
   }
 
   // Cancelar edición
+  // Importar desde Excel
+  const handleImportExcel = (e) => {
+    const archivo = e.target.files[0]
+    if (!archivo) return
+    
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const texto = event.target.result
+        const lineas = texto.split("\n")
+        let importados = 0
+        
+        lineas.forEach((linea, i) => {
+          if (i === 0) return // skip header
+          const cols = linea.split(",")
+          if (cols.length < 2) return
+          
+          const nombre = cols[0].trim()
+          const precio = parseFloat(cols[1].trim())
+          const stock = parseFloat(cols[2]?.trim() || 0)
+          
+          if (nombre && !isNaN(precio)) {
+            const existe = productos.find(p => p.nombre.toLowerCase() === nombre.toLowerCase())
+            if (existe) {
+              setProductos(productos.map(p =>
+                p.nombre.toLowerCase() === nombre.toLowerCase()
+                  ? { ...p, precio_venta: precio, stock: stock || p.stock } : p
+              ))
+            } else {
+              setProductos([...productos, {
+                id: crypto.randomUUID(),
+                nombre,
+                precio_venta: precio,
+                stock: stock || 0,
+                estado: "activo"
+              }])
+            }
+            importados++
+          }
+        })
+        setMensaje({ tipo: "success", texto: `${importados} productos importados` })
+      } catch (err) {
+        setMensaje({ tipo: "error", texto: "Error al importar" })
+      }
+    }
+    reader.readAsText(archivo)
+  }
+
   const handleCancelar = () => {
     setEditando(null)
     setNuevoStock('')
