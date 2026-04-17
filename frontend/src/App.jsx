@@ -5,6 +5,9 @@ import ReceiptModal from './components/ReceiptModal'
 import ProductSearch from './components/ProductSearch'
 import HistorialVentas from './components/HistorialVentas'
 import InformeDiario from './components/InformeDiario'
+import Clientes from './components/Clientes'
+import Turnos from './components/Turnos'
+import Configuracion from './components/Configuracion'
 
 const NOMBRE_TIENDA = "Mi Papelería"
 
@@ -71,6 +74,7 @@ function POSPortal() {
     { id: 'efectivo', label: 'Gestión de efectivo', icon: '💵' },
     { id: 'devoluciones', label: 'Devoluciones', icon: '↩️' },
     { id: 'contactos', label: 'Contactos', icon: '👥' },
+    { id: 'clientes', label: 'Clientes', icon: '👤' },
     { id: 'inventario', label: 'Inventario', icon: '📦', submenu: [
       { id: 'productos_servicios', label: 'Productos y Servicios' },
       { id: 'promociones', label: 'Promociones' },
@@ -91,6 +95,9 @@ function POSPortal() {
     if (currentPage === 'informe_diario') return <InformeDiario />
     if (currentPage === 'productos_servicios') return <Inventario />
     if (currentPage === 'gestion_productos') return <ProductManager />
+    if (currentPage === 'clientes') return <Clientes />
+    if (currentPage === 'turnos') return <Turnos />
+    if (currentPage === 'configuraciones') return <Configuracion />
     return <Placeholder title={posMenu.find(m => m.id === currentPage)?.label || 'En construcción'} />
   }
 
