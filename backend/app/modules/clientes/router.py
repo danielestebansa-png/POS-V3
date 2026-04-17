@@ -1,128 +1,77 @@
-# ============================================
-# CLIENTES ROUTER
-# ============================================
+# Clientes Router
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import text
 from pydantic import BaseModel
-from typing import Optional, List
-from uuid import UUID
+from typing import Optional
 from app.core.database import get_db
 from app.core.security import get_current_user
-from app.modules.productos.models import Cliente
 
 router = APIRouter()
 
 
-# ============================================
-# SCHEMAS
-# ============================================
-
 class ClienteCreate(BaseModel):
-    tipo_documento: str  # CC, NIT, CE
-    documento: str
     nombre: str
-    nombre_comercial: Optional[str] = None
-    telefono: Optional[str] = None
-    email: Optional[str] = None
-    direccion: Optional[str] = None
-    limite_credito: float = 0
+    identificacion: str = ""
+    telefono: str = ""
+    email: str = ""
+    direccion: str = ""
+    estado: str = "activo"
 
 
-class ClienteResponse(BaseModel):
-    id: str
-    tipo_documento: str
-    documento: str
-    nombre: str
-    telefono: Optional[str]
-    email: Optional[str]
+@router.get("/clientes")
+async def get_clientes(buscar: str = "", current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
     
-    class Config:
-        from_attributes = True
+    query = "SELECT id, nombre, identificacion, telefono, email, direccion, estado FROM clientes WHERE tenant_id = :t"
+    params = {"t": tid}
+    
+    if buscar:
+        query += " AND (nombre ILIKE :b OR identificacion ILIKE :b)"
+        params["b"] = f"%{buscar}%"
+    
+    query += " ORDER BY nombre LIMIT 50"
+    
+    result = await db.execute(text(query), params)
+    return [{"id": str(r[0]), "nombre": r[1], "identificacion": r[2], "telefono": r[3], "email": r[4], "direccion": r[5], "estado": r[6]} for r in result.fetchall()]
 
 
-# ============================================
-# ENDPOINTS
-# ============================================
-
-@router.get("/", response_model=List[ClienteResponse])
-async def get_clientes(
-    search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    query = select(Cliente).where(
-        and_(Cliente.tenant_id == current_user["tenant_id"], Cliente.estado == "activo")
+@router.post("/clientes", status_code=201)
+async def create_cliente(cliente: ClienteCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    import uuid
+    cid = str(uuid.uuid4())
+    
+    await db.execute(
+        text("INSERT INTO clientes (id, tenant_id, nombre, identificacion, telefono, email, direccion, estado) VALUES (:id, :t, :n, :i, :tel, :e, :d, :est)"),
+        {"id": cid, "t": tid, "n": cliente.nombre, "i": cliente.identificacion, "tel": cliente.telefono, "e": cliente.email, "d": cliente.direccion, "est": cliente.estado}
     )
-    
-    if search:
-        search = f"%{search}%"
-        query = query.where(
-            (Cliente.nombre.ilike(search)) |
-            (Cliente.documento.ilike(search)) |
-            (Cliente.telefono.ilike(search))
-        )
-    
-    result = await db.execute(query)
-    return result.scalars().all()
-
-
-@router.get("/{cliente_id}", response_model=ClienteResponse)
-async def get_cliente(
-    cliente_id: UUID,
-    current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(
-        select(Cliente).where(
-            and_(
-                Cliente.id == cliente_id,
-                Cliente.tenant_id == current_user["tenant_id"]
-            )
-        )
-    )
-    cliente = result.scalar_one_or_none()
-    
-    if not cliente:
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")
-    
-    return cliente
-
-
-@router.post("/", response_model=ClienteResponse, status_code=201)
-async def create_cliente(
-    cliente: ClienteCreate,
-    current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    # Verificar documento único
-    result = await db.execute(
-        select(Cliente).where(
-            and_(
-                Cliente.tenant_id == current_user["tenant_id"],
-                Cliente.documento == cliente.documento
-            )
-        )
-    )
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Cliente con este documento ya existe")
-    
-    nuevo_cliente = Cliente(
-        tenant_id=current_user["tenant_id"],
-        tipo_documento=cliente.tipo_documento,
-        documento=cliente.documento,
-        nombre=cliente.nombre,
-        nombre_comercial=cliente.nombre_comercial,
-        telefono=cliente.telefono,
-        email=cliente.email,
-        direccion=cliente.direccion,
-        limite_credito=cliente.limite_credito,
-        estado="activo"
-    )
-    
-    db.add(nuevo_cliente)
     await db.commit()
-    await db.refresh(nuevo_cliente)
     
-    return nuevo_cliente
+    return {"id": cid, "message": "Cliente creado"}
+
+
+@router.put("/clientes/{cliente_id}")
+async def update_cliente(cliente_id: str, cliente: ClienteCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    await db.execute(
+        text("UPDATE clientes SET nombre = :n, identificacion = :i, telefono = :tel, email = :e, direccion = :d, estado = :est WHERE id = :id AND tenant_id = :t"),
+        {"id": cliente_id, "t": tid, "n": cliente.nombre, "i": cliente.identificacion, "tel": cliente.telefono, "e": cliente.email, "d": cliente.direccion, "est": cliente.estado}
+    )
+    await db.commit()
+    
+    return {"message": "Cliente actualizado"}
+
+
+@router.delete("/clientes/{cliente_id}")
+async def delete_cliente(cliente_id: str, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    tid = current_user["tenant_id"]
+    
+    await db.execute(text("DELETE FROM clientes WHERE id = :id AND tenant_id = :t"), {"id": cliente_id, "t": tid})
+    await db.commit()
+    
+    return {"message": "Cliente eliminado"}
+
+print("Clientes router created")

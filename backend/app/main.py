@@ -12,6 +12,7 @@ from app.modules.auth.router import router as auth_router
 from app.modules.tenants.router import router as tenants_router
 from app.modules.productos.router import router as productos_router
 from app.modules.turnos.router import router as turnos_router
+from app.modules.clientes.router import router as clientes_router
 from app.modules.ventas.router import router as ventas_router
 from app.modules.clientes.router import router as clientes_router
 
@@ -59,6 +60,7 @@ app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 app.include_router(tenants_router, prefix="/api/tenants", tags=["Tenants"])
 app.include_router(productos_router, prefix="/api/productos", tags=["Productos"])
 app.include_router(turnos_router, prefix="/api/turnos", tags=["turnos"])
+app.include_router(clientes_router, prefix="/api/clientes", tags=["clientes"])
 app.include_router(ventas_router, prefix="/api/ventas", tags=["Ventas"])
 app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 
