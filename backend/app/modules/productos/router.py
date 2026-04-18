@@ -176,7 +176,7 @@ async def create_producto(producto: ProductoCreate, current_user: dict = Depends
         text("""INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, categoria_id, codigo, estado) 
               VALUES (:id, :tid, :nombre, :pv, :pc, :cat, :cod, :est)"""),
         {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta, 
-         "pc": producto.precio_costo, "cat": producto.categoria_id, "cod": producto.codigo, "est": producto.estado}
+         "pc": producto.precio_costo, "cat": producto.categoria_id or None, "cod": producto.codigo or "", "est": producto.estado}
     )
     await db.commit()
     
@@ -483,3 +483,4 @@ async def create_variante(data: dict, current_user: dict = Depends(get_current_u
                    {"id": vid, "t": tid, "n": data.get("nombre", ""), "o": data.get("opciones", "")})
     await db.commit()
     return {"id": vid, "message": "Variante creada"}
+// deploy trigger Sat Apr 18 01:18:25 -05 2026
