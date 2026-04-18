@@ -2,7 +2,7 @@
 # PRODUCTOS ROUTER
 # ============================================
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from pydantic import BaseModel
@@ -163,8 +163,12 @@ class ProductoCreate(BaseModel):
 
 
 @router.post("/productos", status_code=201)
-async def create_producto(producto: ProductoCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    tid = current_user["tenant_id"]
+async def create_producto(producto: ProductoCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db), X_Tenant_ID: str = None):
+    # Support X-Tenant-ID header for direct API access
+    tid = current_user.get("tenant_id") or X_Tenant_ID or "demo-tenant"
+    
+    if not tid or tid == "demo-tenant":
+        return {"detail": "Se requiere autenticación o X-Tenant-ID válido"}
     import uuid
     pid = str(uuid.uuid4())
     
