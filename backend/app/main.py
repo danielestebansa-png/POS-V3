@@ -211,3 +211,16 @@ async def init_db_disabled():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.get("/debug/products_raw")
+async def debug_products_raw(x_tenant_id: str = Header(None, alias="X-Tenant-ID")):
+    """Debug: see raw products without filters"""
+    from app.core.database import AsyncSessionLocal
+    from sqlalchemy import text
+    
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            text("SELECT id, nombre, tenant_id, estado FROM productos WHERE tenant_id = :tid"),
+            {"tid": x_tenant_id}
+        )
+        rows = result.fetchall()
+        return [{"id": str(r[0]), "nombre": r[1], "tenant_id": str(r[2]), "estado": r[3]} for r in rows]
