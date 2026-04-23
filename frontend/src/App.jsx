@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.7</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.8</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -498,6 +498,9 @@ function InventarioModule() {
 function GestionInvModule() {
   const [page, setPage] = useState('')
   const [categoriasList, setCategoriasList] = useState([])
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
+  const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
+  const [editandoCategoria, setEditandoCategoria] = useState(null)
   
   // Read page from URL on mount - simpler
   useEffect(() => {
@@ -524,8 +527,78 @@ function GestionInvModule() {
   ]
   
   // Show subpage only if page is set to categorias or campos
-  if (page) return (
+  if (page) // Modal for create/edit categoria
+  const CategoriaModal = () => showCategoriaModal ? (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <h2 className="text-xl font-bold mb-2">{editandoCategoria ? 'Editar' : 'Nueva'} categoría</h2>
+        <p className="text-gray-500 text-sm mb-4">Crea nuevas categorías para clasificar tus productos y ubicarlos fácilmente.</p>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Nombre *</label>
+            <input 
+              type="text" 
+              value={categoriaForm.nombre}
+              onChange={e => setCategoriaForm({...categoriaForm, nombre: e.target.value})}
+              className="w-full border rounded px-3 py-2" 
+              placeholder="Ej: Bebidas frías"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Descripción</label>
+            <textarea 
+              value={categoriaForm.descripcion}
+              onChange={e => setCategoriaForm({...categoriaForm, descripcion: e.target.value})}
+              className="w-full border rounded px-3 py-2" 
+              placeholder="Descripción de la categoría"
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Selecciona una imagen</label>
+            <div className="border-2 border-dashed rounded-lg p-4 text-center text-gray-400">
+              <p className="text-sm">Ningún archivo seleccionado</p>
+              <p className="text-xs">Tamaño máximo: 2MB</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex gap-2 mt-6">
+          <button 
+            onClick={() => setShowCategoriaModal(false)} 
+            className="flex-1 border py-2 rounded text-gray-600"
+          >
+            Cancelar
+          </button>
+          <button 
+            onClick={async () => {
+              if (!categoriaForm.nombre) {
+                alert('El nombre es requerido');
+                return;
+              }
+              if (editandoCategoria) {
+                // Update - would call API here
+                alert('Categoría actualizada');
+              } else {
+                await crearCategoria({ nombre: categoriaForm.nombre, descripcion: categoriaForm.descripcion, estado: 'activo' });
+              }
+              const r = await getCategorias();
+              setCategoriasList(r.data || []);
+              setShowCategoriaModal(false);
+            }} 
+            className="flex-1 bg-emerald-600 text-white py-2 rounded"
+          >
+            {editandoCategoria ? 'Actualizar' : 'Crear'} categoría
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null
+
+  return (
     <div className="p-4">
+      <CategoriaModal />
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{
       page === 'variantes' ? '🎨 Variantes' : 
@@ -554,13 +627,10 @@ function GestionInvModule() {
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <button onClick={async () => {
-                const nombre = prompt('Nombre de la categoría:');
-                if (nombre) {
-                  await crearCategoria({ nombre, estado: 'activo' });
-                  const r = await getCategorias();
-                  setCategoriasList(r.data || []);
-                }
+              <button onClick={() => {
+                setCategoriaForm({ nombre: '', descripcion: '' });
+                setEditandoCategoria(null);
+                setShowCategoriaModal(true);
               }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
             </div>
             <div className="space-y-2">
@@ -572,7 +642,11 @@ function GestionInvModule() {
               ) : categoriasList.map(cat => (
                 <div key={cat.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <span>📁 {cat.nombre}</span>
-                  <button className="text-gray-400 hover:text-gray-600">✏️</button>
+                  <button onClick={() => {
+                setCategoriaForm({ nombre: cat.nombre, descripcion: cat.descripcion || '' });
+                setEditandoCategoria(cat);
+                setShowCategoriaModal(true);
+              }} className="text-gray-400 hover:text-gray-600">✏️</button>
                 </div>
               ))}
             </div>
