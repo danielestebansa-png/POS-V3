@@ -11,21 +11,13 @@ import Turnos from './components/Turnos'
 import Configuracion from './components/Configuracion'
 
 const NOMBRE_TIENDA = "Mi Papelería"
-const VERSION = "1.1"
-let _notification = null
-const _setNotification = (msg) => { _notification = msg; setTimeout(() => _notification = null, 3000); }
-const showNotification = (msg) => { _setNotification(msg) }
+window.showNotification = function(msg) { alert("✅ " + msg) }
+const VERSION = "1.1" 
 
 export default function App() {
   const [portal, setPortal] = useState('inicio')
   const [version] = useState(VERSION)
-  const [notification, setNotification] = useState(_notification)
-  
-  // Sync global notification with state
-  useEffect(() => {
-    const interval = setInterval(() => setNotification(_notification), 100)
-    return () => clearInterval(interval)
-  }, [])
+  const [notification, setNotification] = useState(null)
   
   const showNotification = (msg) => {
     setNotification(msg)
