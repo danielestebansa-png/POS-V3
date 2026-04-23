@@ -587,10 +587,9 @@ function GestionInvModule() {
               <button onClick={() => { 
     console.log('CLICK BOTON 4.4');
     setCatNombre('');
-    setCatDesc('');
     setShowCatModal(true);
-    console.log('Modal deberia abrirse');
-  }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
+    console.log('CLICK V5');
+  }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría V5</button>
             </div>
             <div className="space-y-2">
               {categoriasList.length === 0 ? (
