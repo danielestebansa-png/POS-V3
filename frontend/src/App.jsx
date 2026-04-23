@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.9</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 2.0</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -555,13 +555,10 @@ function GestionInvModule() {
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <button onClick={async () => {
-                const nombre = prompt('Nombre de la categoría:');
-                if (nombre) {
-                  await crearCategoria({ nombre, estado: 'activo' });
-                  const r = await getCategorias();
-                  setCategoriasList(r.data || []);
-                }
+              <button onClick={() => {
+                setCategoriaForm({ nombre: '', descripcion: '' });
+                setEditandoCategoria(null);
+                setShowCategoriaModal(true);
               }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
             </div>
             <div className="space-y-2">
