@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 3.2</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 3.3</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -498,7 +498,7 @@ function InventarioModule() {
 function GestionInvModule() {
   const [page, setPage] = useState('')
   const [categoriasList, setCategoriasList] = useState([])
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
+  const [showCategoriaModal, setShowCategoriaModal] = useState(true)
   const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
   const [editandoCategoria, setEditandoCategoria] = useState(null)
   const openCategoriaModal = () => {
