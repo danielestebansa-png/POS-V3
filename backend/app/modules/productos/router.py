@@ -483,4 +483,3 @@ async def create_variante(data: dict, current_user: dict = Depends(get_current_u
                    {"id": vid, "t": tid, "n": data.get("nombre", ""), "o": data.get("opciones", "")})
     await db.commit()
     return {"id": vid, "message": "Variante creada"}
-// deploy trigger Sat Apr 18 01:18:25 -05 2026
