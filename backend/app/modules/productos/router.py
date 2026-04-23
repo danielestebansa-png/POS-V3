@@ -173,10 +173,8 @@ async def create_producto(producto: ProductoCreate, current_user: dict = Depends
     pid = str(uuid.uuid4())
     
     await db.execute(
-        text("""INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, categoria_id, codigo, estado) 
-              VALUES (:id, :tid, :nombre, :pv, :pc, :cat, :cod, :est)"""),
-        {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta, 
-         "pc": producto.precio_costo, "cat": producto.categoria_id or None, "cod": producto.codigo or "", "est": producto.estado}
+        text("INSERT INTO productos (id, tenant_id, nombre, precio_venta) VALUES (:id, :tid, :nombre, :pv)"),
+        {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta}
     )
     await db.commit()
     
@@ -196,10 +194,8 @@ async def update_producto(producto_id: str, producto: ProductoCreate, current_us
     tid = current_user["tenant_id"]
     
     await db.execute(
-        text("""UPDATE productos SET nombre = :nombre, precio_venta = :pv, precio_costo = :pc, 
-              categoria_id = :cat, codigo = :cod, estado = :est WHERE id = :id AND tenant_id = :tid"""),
-        {"id": producto_id, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta,
-         "pc": producto.precio_costo, "cat": producto.categoria_id, "cod": producto.codigo, "est": producto.estado}
+        text("UPDATE productos SET nombre = :nombre, precio_venta = :pv WHERE id = :id AND tenant_id = :tid"),
+        {"id": producto_id, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta}
     )
     await db.commit()
     
