@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.2</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.3</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -501,22 +501,24 @@ function GestionInvModule() {
   // Read page from URL on mount - simpler
   useEffect(() => {
     const fullHash = window.location.hash;
-    if (fullHash.includes('/variantes')) setPage('variantes');
+    if (fullHash.includes('/inventario')) setPage('inventario');
+    else if (fullHash.includes('/variantes')) setPage('variantes');
     else if (fullHash.includes('/categorias')) setPage('categorias');
     else if (fullHash.includes('/campos')) setPage('campos');
   }, [])
   
   const cards = [
-    {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos como color, talla.', icono: '🎨'},
-    {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos en grupos.', icono: '📁'},
-    {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra.', icono: '📝'},
+    {id: 'inventario', titulo: 'Gestión de inventario', desc: 'Define las cualidades y la trazabilidad de tus productos. Úsalas automáticamente al crear documentos de venta.', icono: '📦'},
+    {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos variables que definen las características de tus productos, como color y talla.', icono: '🎨'},
+    {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos en grupos para mejor gestión y búsqueda.', icono: '📁'},
+    {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra para cada producto según necesidades específicas.', icono: '📝'},
   ]
   
   // Show subpage only if page is set to categorias or campos
-  if (page === 'variantes' || page === 'categorias' || page === 'campos') return (
+  if (page === 'inventario' || page === 'variantes' || page === 'categorias' || page === 'campos') return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
-      <h2 className="text-xl font-bold">{(page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
+      <h2 className="text-xl font-bold">{(page === 'inventario' ? '📦' : page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
       <div className="bg-white rounded-lg border p-8 text-center">
         <p className="text-4xl mb-2">🎨</p>
         <p className="text-gray-500">¡Crea tu primera variante!</p>
