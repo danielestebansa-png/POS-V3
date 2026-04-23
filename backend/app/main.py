@@ -211,3 +211,10 @@ async def init_db_disabled():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+# Debug endpoint
+@app.get("/debug/tenant")
+async def debug_tenant(x_tenant_id: str = Header(None, alias="X-Tenant-ID")):
+    """Debug endpoint to check tenant"""
+    from app.core.security import get_current_user
+    # Call it to test
+    return {"tenant_id": x_tenant_id, "type": type(x_tenant_id)}
