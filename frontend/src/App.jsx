@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 3.9</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 3.6</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -529,7 +529,8 @@ function GestionInvModule() {
   const [page, setPage] = useState('')
   const [categoriasList, setCategoriasList] = useState([])
   const [showCategoriaModal, setShowCategoriaModal] = useState(false)
-  const [forceRefresh, setForceRefresh] = useState(0)
+  const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
   const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
   const [editandoCategoria, setEditandoCategoria] = useState(null)
   const openCategoriaModal = () => {
@@ -591,11 +592,7 @@ function GestionInvModule() {
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <div onClick={() => { 
-    console.log('CLICK DIV V3.9'); 
-    setShowCategoriaModal(true);
-    setForceRefresh(f => f + 1);
-  }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm cursor-pointer">+ Nueva Categoría Debug</div>
+              <button onClick={() => setShowCategoriaModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
             </div>
             <div className="space-y-2">
               {categoriasList.length === 0 ? (
@@ -647,47 +644,20 @@ function GestionInvModule() {
         ))}
       </div>
     </div>
-  )
-  
-  // Modal de categorías
-  if (showCategoriaModal) return (
-    <>
-      <div key={forceRefresh}>
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-          <h2 className="text-xl font-bold mb-4">Nueva categoría</h2>
-          <div className="space-y-3">
-            <input 
-              placeholder="Nombre *" 
-              value={categoriaForm.nombre} 
-              onChange={e => setCategoriaForm({...categoriaForm, nombre: e.target.value})}
-              className="w-full border rounded px-3 py-2"
-            />
-            <textarea 
-              placeholder="Descripción" 
-              value={categoriaForm.descripcion} 
-              onChange={e => setCategoriaForm({...categoriaForm, descripcion: e.target.value})}
-              className="w-full border rounded px-3 py-2"
-              rows={3}
-            />
-          </div>
-          <div className="flex gap-2 mt-4">
-            <button onClick={() => setShowCategoriaModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
-            <button onClick={async () => {
-              if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-              await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-              const r = await getCategorias();
-              setCategoriasList(r.data || []);
-              setShowCategoriaModal(false);
-            }} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-  
-  return (
-    <div></div>
+    
+    <CategoriaModal 
+      show={showCategoriaModal}
+      onClose={() => setShowCategoriaModal(false)}
+      form={categoriaForm}
+      setForm={setCategoriaForm}
+      onSave={async () => {
+        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
+        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
+        const r = await getCategorias();
+        setCategoriasList(r.data || []);
+        setShowCategoriaModal(false);
+      }}
+    />
   )
 }
 
