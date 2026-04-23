@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: pos-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishDir: dist
+    envVars:
+      - key: API_URL
+        value: https://pos-backend.onrender.com
