@@ -10,10 +10,17 @@ import Clientes from './components/Clientes'
 import Turnos from './components/Turnos'
 import Configuracion from './components/Configuracion'
 
-const NOMBRE_TIENDA = "Mi Papelería"
+const showNotification = (msg) => {
+    setNotification(msg)
+    setTimeout(() => setNotification(null), 3000)
+  }
+  
+  const NOMBRE_TIENDA = "Mi Papelería" 
 
 export default function App() {
   const [portal, setPortal] = useState('inicio')
+  const [version] = useState('1.1')
+  const [notification, setNotification] = useState(null)
   
   useEffect(() => {
     const path = window.location.hash.replace('#', '') || window.location.pathname
@@ -43,6 +50,18 @@ function InicioPortal() {
 }
 
 function Dashboard({ onNavigate }) {
+  // Notification toast
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
   return (
     <div className="space-y-6">
       <button onClick={() => onNavigate('pos')} className="w-full bg-emerald-600 text-white p-8 rounded-xl hover:bg-emerald-700 transition">
@@ -61,6 +80,17 @@ function Dashboard({ onNavigate }) {
 }
 
 function MiniDashboard({ onNavigate }) {
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
   return (
     <div className="space-y-6 p-4">
       <h1 className="text-2xl font-bold text-emerald-700">🏠Bienvenido a Mi Papelería</h1>
@@ -167,6 +197,17 @@ function POSPortal() {
     return <Placeholder title={posMenu.find(m => m.id === currentPage)?.label || 'En construcción'} />
   }
 
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
@@ -174,9 +215,11 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V {version}</span>
         </div>
         <div className="w-8"></div>
       </header>
+      <Notification />
 
       {menuOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMenuOpen(false)}>
@@ -290,6 +333,17 @@ function FacturarModule() {
   const cartActual = getCarrito()
   const totalActual = getTotal()
 
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
   return (
     <div className="flex gap-4 h-full">
       <div className="flex-1">
@@ -402,7 +456,18 @@ function InventarioModule() {
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
   if (error) return <div className="p-8 text-center text-red-600">❌ Error: {error}</div>
 
-  if (showModal) return (
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
+  return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
@@ -418,7 +483,11 @@ function InventarioModule() {
           <button onClick={() => {
             const nombreInput = document.querySelector('input[name=nombre]')
             if (nombreInput && nombreInput.value) {
-              crearProducto({ nombre: nombreInput.value, precio_venta: Number(document.querySelector('input[name=precio]').value) || 0, stock: Number(document.querySelector('input[name=stock]').value) || 0 })
+              crearProducto({ 
+                nombre: nombreInput.value, 
+                precio_venta: Number(document.querySelector('input[name=precio]').value) || 0, 
+                stock: Number(document.querySelector('input[name=stock]').value) || 0 
+              }).then(() => showNotification('Producto creado: ' + nombreInput.value))
               setShowModal(false)
             } else {
               alert('Escribe un nombre')
@@ -428,6 +497,17 @@ function InventarioModule() {
       </div>
     </div>
   )
+
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
 
   return (
     <div className="space-y-4">
@@ -509,7 +589,18 @@ function GestionInvModule() {
   ]
   
   // Show subpage only if page is set to categorias or campos
-  if (page === 'variantes' || page === 'categorias' || page === 'campos') return (
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
+  return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{(page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
@@ -521,6 +612,17 @@ function GestionInvModule() {
     </div>
   )
   
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
+
   return (
     <div className="space-y-4 p-4">
       <h2 className="text-xl font-bold">Gestión de Inventario</h2>
@@ -547,6 +649,17 @@ function PortalClientes() {
     { id: 'perfil', label: 'Perfil', icon: '👤' },
     { id: 'seguridad', label: 'Seguridad', icon: '🔒' },
   ]
+
+  const Notification = () => notification ? (
+    <div style={{
+      position: 'fixed', top: '20px', right: '20px', 
+      background: '#10b981', color: 'white', padding: '12px 24px', 
+      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999, animation: 'fadeIn 0.3s'
+    }}>
+      ✅ {notification}
+    </div>
+  ) : null
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
