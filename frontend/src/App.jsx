@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.3</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.4</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -496,7 +496,7 @@ function InventarioModule() {
 }
 
 function GestionInvModule() {
-  const [page, setPage] = useState('variantes')
+  const [page, setPage] = useState('')
   
   // Read page from URL on mount - simpler
   useEffect(() => {
@@ -513,7 +513,7 @@ function GestionInvModule() {
   ]
   
   // Show subpage only if page is set to categorias or campos
-  if (page === 'variantes' || page === 'categorias' || page === 'campos') return (
+  if (page) return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{(page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
