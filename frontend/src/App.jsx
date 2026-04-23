@@ -399,7 +399,7 @@ function InventarioModule() {
 
   const productosFiltrados = productos.filter(p => 
     p.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.referencia?.toLowerCase().includes(busqueda.toLowerCase())
+    p.referencia?.toLowerCase().includes(busqueda.toLowerCase()) || categorias.find(c => c.id === p.categoria_id)?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
   )
 
   if (loading) return <div className="p-8 text-center">⏳ Cargando productos...</div>
@@ -471,6 +471,7 @@ function InventarioModule() {
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="text-left p-3 font-medium">Nombre</th>
+              <th className="text-left p-3 font-medium">Categoría</th>
               <th className="text-left p-3 font-medium">Referencia</th>
               <th className="text-right p-3 font-medium">Precio</th>
               <th className="text-right p-3 font-medium">Cantidad Total</th>
@@ -478,7 +479,7 @@ function InventarioModule() {
           </thead>
           <tbody>
             {productosFiltrados.length === 0 ? (
-              <tr><td colSpan={4} className="p-8 text-center text-gray-400">No hay productos</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-gray-400">No hay productos</td></tr>
             ) : productosFiltrados.map(p => (
               <tr key={p.id} className="border-b hover:bg-gray-50">
                 <td className="p-3 font-medium">{p.nombre}</td>
