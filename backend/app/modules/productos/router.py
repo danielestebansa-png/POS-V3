@@ -107,7 +107,7 @@ async def get_productos(
         text("""
             SELECT p.id, p.nombre, p.precio_venta, COALESCE(i.cantidad, 0) as stock, p.categoria_id 
             FROM productos p 
-            LEFT JOIN inventario i ON i.producto_id = p.id 
+            LEFT JOIN inventario i ON i.producto_id = p.id AND i.tenant_id = p.tenant_id 
             WHERE p.tenant_id = :t AND p.estado = 'activo'
             ORDER BY p.nombre
         """),
