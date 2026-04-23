@@ -166,6 +166,7 @@ class ProductoCreate(BaseModel):
 async def create_producto(producto: ProductoCreate, current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db), X_Tenant_ID: str = None):
     # Support X-Tenant-ID header for direct API access
     tid = current_user.get("tenant_id") or X_Tenant_ID or "demo-tenant"
+    print(f"DEBUG: Creating product with tenant_id={tid}, nombre={producto.nombre}")
     
     if not tid or tid == "demo-tenant":
         return {"detail": "Se requiere autenticación o X-Tenant-ID válido"}
