@@ -145,7 +145,7 @@ function POSPortal() {
       { id: 'ajustes_inv', label: 'Ajustes de inventario' },
       { id: 'bodegas', label: 'Bodegas' },
       { id: 'listas_precios', label: 'Listas de Precios' },
-      { id: 'gestion_inv', label: 'Gestión de Inventario' }
+      { id: 'gestion_inv', label: 'Gesti00f3n de Inventario' }
     ]},
     { id: 'compras', label: 'Compras', icon: '🛒' },
     { id: 'configuraciones', label: 'Configuraciones', icon: '⚙️' },
@@ -527,7 +527,7 @@ function GestionInvModule() {
   
   return (
     <div className="space-y-4 p-4">
-      <h2 className="text-xl font-bold">Gestión de Inventario</h2>
+      <h2 className="text-xl font-bold">Gesti00f3n de Inventario</h2>
       <div className="grid gap-4">
         {cards.map(card => (
           <div key={card.id} onClick={() => window.location.hash = '/pos/gestion_inv/' + card.id} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
