@@ -3,7 +3,8 @@ import { getProductos, getVentas, createVenta, crearProducto, getCategorias, cre
 
 // Modal component
 const CategoriaModal = ({ show, onClose, nombre, setNombre, descripcion, setDescripcion, onCrear }) => {
-  if (!show) return null;
+  if (!show) { console.log('show es false'); return null; }
+  console.log('Renderizando modal, show=' + show);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -583,7 +584,13 @@ function GestionInvModule() {
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <button onClick={() => { setCatNombre(''); setCatDesc(''); setShowCatModal(true); }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
+              <button onClick={() => { 
+    console.log('CLICK BOTON 4.4');
+    setCatNombre('');
+    setCatDesc('');
+    setShowCatModal(true);
+    console.log('Modal deberia abrirse');
+  }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
             </div>
             <div className="space-y-2">
               {categoriasList.length === 0 ? (
