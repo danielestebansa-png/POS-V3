@@ -9,8 +9,38 @@ import InformeDiario from './components/InformeDiario'
 import Clientes from './components/Clientes'
 import Turnos from './components/Turnos'
 import Configuracion from './components/Configuracion'
+import CategoriaModal from './components/CategoriaModal'
+
+// CategoriaModal inline definition
+function CategoriaModalInline(props) {
+  if (!props.show) return null;
+  return (
+    <div style={{position:'fixed',inset:0,backgroundColor:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
+      <div style={{backgroundColor:'white',borderRadius:'8px',padding:'24px',width:'90%',maxWidth:'400px'}}>
+        <h2 style={{fontSize:'20px',fontWeight:'bold',marginBottom:'16px'}}>New Category</h2>
+        <input 
+          placeholder="Name *" 
+          value={props.nombre} 
+          onChange={e => props.setNombre(e.target.value)}
+          style={{width:'100%',padding:'10px',border:'1px solid #ddd',borderRadius:'4px',marginBottom:'12px'}}
+        />
+        <textarea 
+          placeholder="Description" 
+          value={props.descripcion} 
+          onChange={e => props.setDescripcion(e.target.value)}
+          style={{width:'100%',padding:'10px',border:'1px solid #ddd',borderRadius:'4px',marginBottom:'12px'}}
+        />
+        <div style={{display:'flex',gap:'8px'}}>
+          <button onClick={props.onClose} style={{flex:1,padding:'10px',border:'1px solid #ddd',borderRadius:'4px',backgroundColor:'white'}}>Cancel</button>
+          <button onClick={props.onCrear} style={{flex:1,padding:'10px',border:'none',borderRadius:'4px',backgroundColor:'#10b981',color:'white'}}>Create</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const NOMBRE_TIENDA = "Mi Papelería"
+
 
 export default function App() {
   const [portal, setPortal] = useState('inicio')
@@ -174,7 +204,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 7.0</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 9.0</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -498,7 +528,9 @@ function InventarioModule() {
 function GestionInvModule() {
   const [page, setPage] = useState('')
   const [categoriasList, setCategoriasList] = useState([])
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
+  const [showCatModal, setShowCatModal] = useState(false)
+  const [catNombre, setCatNombre] = useState('')
+  const [catDesc, setCatDesc] = useState('')
   const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
   const [editandoCategoria, setEditandoCategoria] = useState(null)
   const openCategoriaModal = () => {
@@ -560,7 +592,7 @@ function GestionInvModule() {
           <div className="bg-white p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <button onClick={() => { alert('V7 TEST'); }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
+              <button onClick={() => { setCatNombre(''); setCatDesc(''); setShowCatModal(true); }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
             </div>
             <div className="space-y-2">
               {categoriasList.length === 0 ? (
@@ -613,6 +645,27 @@ function GestionInvModule() {
       </div>
     </div>
   )
+  
+  return (
+    <>
+      <div></div>
+      <CategoriaModalInline 
+        show={showCatModal}
+        onClose={() => setShowCatModal(false)}
+        nombre={catNombre}
+        setNombre={setCatNombre}
+        descripcion={catDesc}
+        setDescripcion={setCatDesc}
+        onCrear={async () => {
+          if (!catNombre) { alert('Nombre requerido'); return; }
+          await crearCategoria({ nombre: catNombre, descripcion: catDesc, estado: 'activo' });
+          const r = await getCategorias();
+          setCategoriasList(r.data || []);
+          setShowCatModal(false);
+        }}
+      />
+    </>
+  )
 }
 
 function PortalClientes() {
@@ -637,3 +690,6 @@ function PortalClientes() {
 }
  
 // deploy test 1776467958
+// New build Thu Apr 23 17:49:44 -05 2026
+// Force rebuild at Thu Apr 23 17:50:47 -05 2026
+// UNIQUE_MARKER_123456789
