@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.4</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.5</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -516,12 +516,68 @@ function GestionInvModule() {
   if (page) return (
     <div className="p-4">
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
-      <h2 className="text-xl font-bold">{(page === 'variantes' ? '🎨' : page === 'categorias' ? '📁' : '📝')} {page.charAt(0).toUpperCase() + page.slice(1)}</h2>
-      <div className="bg-white rounded-lg border p-8 text-center">
-        <p className="text-4xl mb-2">🎨</p>
-        <p className="text-gray-500">¡Crea tu primera variante!</p>
-        <p className="text-gray-400 text-sm mt-1">Crea variantes para agrupar productos según atributos.</p>
-      </div>
+      <h2 className="text-xl font-bold">{
+      page === 'variantes' ? '🎨 Variantes' : 
+      page === 'categorias' ? '📁 Categorías' : 
+      '📝 Campos adicionales'
+    }</h2>
+      
+      {page === 'variantes' && (
+        <div className="space-y-4 mt-4">
+          <div className="bg-white p-4 rounded-lg border">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg">Lista de Variantes</h3>
+              <button className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Variante</button>
+            </div>
+            <div className="text-center py-8 text-gray-400">
+              <p className="text-3xl mb-2">🎨</p>
+              <p>No hay variantes creadas</p>
+              <p className="text-sm">Crea variantes para definir atributos como color, talla, tamaño, etc.</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {page === 'categorias' && (
+        <div className="space-y-4 mt-4">
+          <div className="bg-white p-4 rounded-lg border">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg">Lista de Categorías</h3>
+              <button className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <span>📁 Bebidas y Comidas</span>
+                <button className="text-gray-400 hover:text-gray-600">✏️</button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <span>📁 Útiles Escolares</span>
+                <button className="text-gray-400 hover:text-gray-600">✏️</button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <span>📁 Papelería</span>
+                <button className="text-gray-400 hover:text-gray-600">✏️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {page === 'campos' && (
+        <div className="space-y-4 mt-4">
+          <div className="bg-white p-4 rounded-lg border">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg">Lista de Campos Adicionales</h3>
+              <button className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nuevo Campo</button>
+            </div>
+            <div className="text-center py-8 text-gray-400">
+              <p className="text-3xl mb-2">📝</p>
+              <p>No hay campos adicionales</p>
+              <p className="text-sm">Crea campos personalizados para tus productos</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
   
