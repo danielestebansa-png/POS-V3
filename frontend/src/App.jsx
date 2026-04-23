@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getProductos, getVentas, createVenta } from './services/api'
+import { getProductos, getVentas, createVenta, crearProducto } from './services/api'
 import ProductManager from './components/ProductManager'
 import PaymentModal from './components/PaymentModal'
 import ReceiptModal from './components/ReceiptModal'
