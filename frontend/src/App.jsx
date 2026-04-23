@@ -377,7 +377,7 @@ function FacturarModule() {
 function InventarioModule() {
   const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [bodega, setBodega] = useState('')
@@ -528,7 +528,7 @@ function CategoriaModal({ show, onClose, onSave, form, setForm }) {
 function GestionInvModule() {
   const [page, setPage] = useState('')
   const [categoriasList, setCategoriasList] = useState([])
-  const [showCategoriaModal, setShowCategoriaModal] = useState(true)
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
   const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
   const [editandoCategoria, setEditandoCategoria] = useState(null)
   const openCategoriaModal = () => {
