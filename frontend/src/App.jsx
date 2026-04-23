@@ -56,20 +56,7 @@ function Dashboard({ onNavigate }) {
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">📦</div><p className="text-2xl font-bold">10</p><p className="text-gray-500 text-sm">Productos</p></div>
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">👥</div><p className="text-2xl font-bold">5</p><p className="text-gray-500 text-sm">Clientes</p></div>
       </div>
-    
-    <CategoriaModal 
-      show={showCategoriaModal} 
-      onClose={() => setShowCategoriaModal(false)}
-      onSave={async () => {
-        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-        const r = await getCategorias();
-        setCategoriasList(r.data || []);
-        setShowCategoriaModal(false);
-      }}
-      form={categoriaForm}
-      setForm={setCategoriaForm}
-    />
+    </div>
   )
 }
 
@@ -109,20 +96,7 @@ function MiniDashboard({ onNavigate }) {
           <p className="text-gray-200 text-sm">Ajustes</p>
         </button>
       </div>
-    
-    <CategoriaModal 
-      show={showCategoriaModal} 
-      onClose={() => setShowCategoriaModal(false)}
-      onSave={async () => {
-        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-        const r = await getCategorias();
-        setCategoriasList(r.data || []);
-        setShowCategoriaModal(false);
-      }}
-      form={categoriaForm}
-      setForm={setCategoriaForm}
-    />
+    </div>
   )
 }
 
@@ -517,20 +491,7 @@ function InventarioModule() {
           </tbody>
         </table>
       </div>
-    
-    <CategoriaModal 
-      show={showCategoriaModal} 
-      onClose={() => setShowCategoriaModal(false)}
-      onSave={async () => {
-        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-        const r = await getCategorias();
-        setCategoriasList(r.data || []);
-        setShowCategoriaModal(false);
-      }}
-      form={categoriaForm}
-      setForm={setCategoriaForm}
-    />
+    </div>
   )
 }
 
@@ -560,20 +521,7 @@ function CategoriaModal({ show, onClose, onSave, form, setForm }) {
           <button onClick={onSave} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
         </div>
       </div>
-    
-    <CategoriaModal 
-      show={showCategoriaModal} 
-      onClose={() => setShowCategoriaModal(false)}
-      onSave={async () => {
-        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-        const r = await getCategorias();
-        setCategoriasList(r.data || []);
-        setShowCategoriaModal(false);
-      }}
-      form={categoriaForm}
-      setForm={setCategoriaForm}
-    />
+    </div>
   )
 }
 
@@ -693,20 +641,7 @@ function GestionInvModule() {
           </div>
         ))}
       </div>
-    
-    <CategoriaModal 
-      show={showCategoriaModal} 
-      onClose={() => setShowCategoriaModal(false)}
-      onSave={async () => {
-        if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
-        await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
-        const r = await getCategorias();
-        setCategoriasList(r.data || []);
-        setShowCategoriaModal(false);
-      }}
-      form={categoriaForm}
-      setForm={setCategoriaForm}
-    />
+    </div>
   )
 }
 
