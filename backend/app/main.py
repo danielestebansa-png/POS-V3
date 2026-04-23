@@ -211,3 +211,18 @@ async def init_db_disabled():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+# Simple endpoint to see ALL products (for debugging)
+@app.get("/api/debug/all_products")
+async def get_all_products():
+    from app.core.database import AsyncSessionLocal
+    from sqlalchemy import text
+    
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(text("""
+            SELECT p.id, p.nombre, p.tenant_id, p.estado, i.cantidad as stock
+            FROM productos p 
+            LEFT JOIN inventario i ON p.id = i.producto_id
+            LIMIT 30
+        """))
+        rows = result.fetchall()
+        return [{"id": str(r[0]), "nombre": r[1], "tenant_id": str(r[2]), "estado": r[3], "stock": r[4]} for r in rows]
