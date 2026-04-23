@@ -418,7 +418,7 @@ function InventarioModule() {
           <button onClick={() => {
             const nombreInput = document.querySelector('input[name=nombre]')
             if (nombreInput && nombreInput.value) {
-              alert('✅ Producto creado: ' + nombreInput.value + ' (Demo)')
+              crearProducto({ nombre: nombreInput.value, precio_venta: Number(document.querySelector('input[name=precio]').value) || 0, stock: Number(document.querySelector('input[name=stock]').value) || 0 })
               setShowModal(false)
             } else {
               alert('Escribe un nombre')
