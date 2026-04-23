@@ -643,6 +643,47 @@ function GestionInvModule() {
       </div>
     </div>
   )
+  
+  // Modal de categorías
+  if (showCategoriaModal) return (
+    <>
+      {null}
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <h2 className="text-xl font-bold mb-4">Nueva categoría</h2>
+          <div className="space-y-3">
+            <input 
+              placeholder="Nombre *" 
+              value={categoriaForm.nombre} 
+              onChange={e => setCategoriaForm({...categoriaForm, nombre: e.target.value})}
+              className="w-full border rounded px-3 py-2"
+            />
+            <textarea 
+              placeholder="Descripción" 
+              value={categoriaForm.descripcion} 
+              onChange={e => setCategoriaForm({...categoriaForm, descripcion: e.target.value})}
+              className="w-full border rounded px-3 py-2"
+              rows={3}
+            />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button onClick={() => setShowCategoriaModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
+            <button onClick={async () => {
+              if (!categoriaForm.nombre) { alert('Nombre requerido'); return; }
+              await crearCategoria({ nombre: categoriaForm.nombre, estado: 'activo' });
+              const r = await getCategorias();
+              setCategoriasList(r.data || []);
+              setShowCategoriaModal(false);
+            }} className="flex-1 bg-emerald-600 text-white py-2 rounded">Crear</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+  
+  return (
+    <div></div>
+  )
 }
 
 function PortalClientes() {
