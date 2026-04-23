@@ -174,7 +174,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.5</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 1.6</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -500,10 +500,16 @@ function GestionInvModule() {
   
   // Read page from URL on mount - simpler
   useEffect(() => {
-    const fullHash = window.location.hash;
-    if (fullHash.includes('/variantes')) setPage('variantes');
-    else if (fullHash.includes('/categorias')) setPage('categorias');
-    else if (fullHash.includes('/campos')) setPage('campos');
+    const checkHash = () => {
+      const fullHash = window.location.hash;
+      if (fullHash.includes('/variantes')) setPage('variantes');
+      else if (fullHash.includes('/categorias')) setPage('categorias');
+      else if (fullHash.includes('/campos')) setPage('campos');
+      else setPage('');
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
   }, [])
   
   const cards = [
