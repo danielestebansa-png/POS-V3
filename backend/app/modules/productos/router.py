@@ -22,9 +22,12 @@ class ProductoResponse(BaseModel):
 
 
 @router.post("/productos", status_code=201)
-async def create_producto(producto: dict, X_Tenant_ID: str = None):
+async def create_producto(producto: dict, X_Tenant_ID: str = Header(None)):
     """Create a new product"""
     tid = X_Tenant_ID
+
+    # Debug log
+    print(f"DEBUG POST: X-Tenant-ID={tid}, producto={producto}")
     if not tid:
         return {"detail": "Se requiere X-Tenant-ID"}
     
