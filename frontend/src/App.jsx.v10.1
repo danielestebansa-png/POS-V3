@@ -81,7 +81,7 @@ function Dashboard({ onNavigate }) {
           <div className="text-4xl">→</div>
         </div>
       </button>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-emerald-600">💰</div><p className="text-2xl font-bold">$125,000</p><p className="text-gray-500 text-sm">Ventas Hoy</p></div>
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">📦</div><p className="text-2xl font-bold">10</p><p className="text-gray-500 text-sm">Productos</p></div>
         <div className="bg-white p-6 rounded shadow-sm border text-center"><div className="text-3xl mb-2 text-gray-600">👥</div><p className="text-2xl font-bold">5</p><p className="text-gray-500 text-sm">Clientes</p></div>
@@ -93,84 +93,37 @@ function Dashboard({ onNavigate }) {
 function MiniDashboard({ onNavigate }) {
   return (
     <div className="space-y-6 p-4">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-4 gap-2">
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-xl shadow-lg">
-          <p className="text-emerald-100 text-sm">Ventas del día</p>
-          <p className="text-2xl font-bold">$215.500</p>
-          <p className="text-emerald-200 text-xs mt-1">↑ 12% vs ayer</p>
-        </div>
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-lg">
-          <p className="text-blue-100 text-sm">Número de ventas</p>
-          <p className="text-2xl font-bold">18</p>
-          <p className="text-blue-200 text-xs mt-1">Transacciones</p>
-        </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl shadow-lg">
-          <p className="text-purple-100 text-sm">Ticket promedio</p>
-          <p className="text-2xl font-bold">$11.972</p>
-          <p className="text-purple-200 text-xs mt-1">por venta</p>
-        </div>
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-xl shadow-lg">
-          <p className="text-orange-100 text-sm">Caja actual</p>
-          <p className="text-2xl font-bold">$185.000</p>
-          <p className="text-orange-200 text-xs mt-1">Efectivo</p>
-        </div>
-      </div>
-      
-      {/* Estado del negocio */}
-      <div className="bg-white rounded-xl shadow-md border p-4">
-        <h3 className="font-bold text-gray-800 mb-3">Estado del negocio</h3>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
-            <span className="text-2xl">⚠️</span>
-            <div>
-              <p className="font-medium text-gray-800">Stock bajo</p>
-              <p className="text-sm text-red-600">5 productos</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-            <span className="text-2xl">💵</span>
-            <div>
-              <p className="font-medium text-gray-800">Caja</p>
-              <p className="text-sm text-green-600">$185.000</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-            <span className="text-2xl">⏳</span>
-            <div>
-              <p className="font-medium text-gray-800">Pendientes</p>
-              <p className="text-sm text-yellow-600">2 por verificar</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Quick Actions */}
-      <h2 className="text-xl font-bold text-gray-800 mt-6">Acciones rápidas</h2>
-      <div className="grid grid-cols-6 gap-3">
-        <button onClick={() => onNavigate('facturar')} className="bg-emerald-600 text-white p-4 rounded-lg hover:bg-emerald-700 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">📄</span>
-          <span className="text-sm font-medium">Facturar</span>
+      <h1 className="text-2xl font-bold text-emerald-700">🏠Bienvenido a Mi Papelería</h1>
+      <div className="grid grid-cols-2 gap-4">
+        <button onClick={() => onNavigate('facturar')} className="bg-emerald-600 text-white p-6 rounded-xl hover:bg-emerald-700 transition text-left">
+          <div className="text-3xl mb-2">📄</div>
+          <div className="text-xl font-bold">Facturar</div>
+          <p className="text-emerald-200 text-sm">Nueva venta</p>
         </button>
-        <button onClick={() => onNavigate('inventario')} className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">📦</span>
-          <span className="text-sm font-medium">Inventario</span>
+        <button onClick={() => onNavigate('inventario')} className="bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700 transition text-left">
+          <div className="text-3xl mb-2">📦</div>
+          <div className="text-xl font-bold">Inventario</div>
+          <p className="text-blue-200 text-sm">Gestionar productos</p>
         </button>
-        <button onClick={() => onNavigate('clientes')} className="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">👥</span>
-          <span className="text-sm font-medium">Clientes</span>
+        <button onClick={() => onNavigate('clientes')} className="bg-purple-600 text-white p-6 rounded-xl hover:bg-purple-700 transition text-left">
+          <div className="text-3xl mb-2">👥</div>
+          <div className="text-xl font-bold">Clientes</div>
+          <p className="text-purple-200 text-sm">Gestionar clientes</p>
         </button>
-        <button onClick={() => onNavigate('turnos')} className="bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">⏰</span>
-          <span className="text-sm font-medium">Turnos</span>
+        <button onClick={() => onNavigate('turnos')} className="bg-orange-600 text-white p-6 rounded-xl hover:bg-orange-700 transition text-left">
+          <div className="text-3xl mb-2">⏰</div>
+          <div className="text-xl font-bold">Turnos</div>
+          <p className="text-orange-200 text-sm">Abrir/Cerrar turno</p>
         </button>
-        <button onClick={() => onNavigate('historial_ventas')} className="bg-gray-600 text-white p-4 rounded-lg hover:bg-gray-700 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">📊</span>
-          <span className="text-sm font-medium">Historial</span>
+        <button onClick={() => onNavigate('historial_ventas')} className="bg-gray-600 text-white p-6 rounded-xl hover:bg-gray-700 transition text-left">
+          <div className="text-3xl mb-2">📊</div>
+          <div className="text-xl font-bold">Historial</div>
+          <p className="text-gray-200 text-sm">Ver ventas</p>
         </button>
-        <button onClick={() => onNavigate('configuraciones')} className="bg-gray-500 text-white p-4 rounded-lg hover:bg-gray-600 transition flex flex-col items-center shadow-md">
-          <span className="text-2xl mb-1">⚙️</span>
-          <span className="text-sm font-medium">Config</span>
+        <button onClick={() => onNavigate('configuraciones')} className="bg-gray-500 text-white p-6 rounded-xl hover:bg-gray-600 transition text-left">
+          <div className="text-3xl mb-2">⚙️</div>
+          <div className="text-xl font-bold">Config</div>
+          <p className="text-gray-200 text-sm">Ajustes</p>
         </button>
       </div>
     </div>
@@ -251,7 +204,7 @@ function POSPortal() {
         <div className="flex items-center gap-3">
           <span className="font-bold text-lg text-gray-800">{NOMBRE_TIENDA}</span>
           <span className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">POS</span>
-          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 11.2</span>
+          <span className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs">V 10.0</span>
         </div>
         <div className="w-8"></div>
       </header>
@@ -300,7 +253,7 @@ function POSPortal() {
           </aside>
         </div>
       )}
-      <main className="flex-1 p-4 overflow-x-hidden max-w-screen-xl">{renderContent()}</main>
+      <main className="flex-1 p-4">{renderContent()}</main>
     </div>
   )
 }
@@ -369,58 +322,53 @@ function FacturarModule() {
   const totalActual = getTotal()
 
   return (
-    <div className="flex gap-2 h-full max-w-screen-2xl mx-auto">
-      <div className="flex-1 min-w-0 pr-2">
+    <div className="flex gap-4 h-full">
+      <div className="flex-1">
         <ProductSearch onAddToCart={agregarAlCarrito} />
       </div>
       
-      <div className="w-96 bg-white rounded-xl shadow-2xl border-2 border-emerald-100 p-5 h-full flex flex-col">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-bold text-emerald-700">🛒 Carrito</h2>
-          <div className="flex gap-1">
-            {ventas.map((v, idx) => (
-              <button
-                key={idx}
-                onClick={() => setVentaActiva(idx)}
-                className={`px-3 py-1.5 text-sm font-bold rounded-lg transition ${
-                  ventaActiva === idx ? 'bg-emerald-600 text-white shadow' : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                {v.nombre}
-              </button>
-            ))}
-            <button onClick={nuevaVenta} className="px-3 py-1.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 rounded-lg">
-              +Nueva
+      <div className="w-80 bg-white rounded-lg shadow-sm border p-4 h-fit sticky top-4">
+        <div className="flex flex-wrap gap-1 mb-4">
+          {ventas.map((v, idx) => (
+            <button
+              key={idx}
+              onClick={() => setVentaActiva(idx)}
+              className={`px-2 py-1 text-xs font-medium rounded ${
+                ventaActiva === idx ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              {v.nombre}
+              {v.items.length > 0 && ` (${v.items.length})`}
             </button>
-          </div>
+          ))}
+          <button onClick={nuevaVenta} className="px-2 py-1 text-xs text-emerald-600 hover:bg-emerald-50 rounded">
+            + Nueva
+          </button>
+        </div>
+        
+        <div className="flex justify-between items-center mb-3 border-b pb-2">
+          <h2 className="text-base font-medium">{ventas[ventaActiva]?.nombre}</h2>
+          <span className="text-xs text-gray-500">{cartActual.length} items</span>
         </div>
         
         {cartActual.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gradient-to-b from-gray-50 to-white rounded-lg mx-1">
-            <div className="text-6xl mb-3 opacity-50">🛒</div>
-            <p className="text-gray-500 font-medium text-lg">Carrito vacío</p>
-            <p className="text-gray-400 text-sm mt-1">Agregue productos del catálogo</p>
-            <div className="mt-4 w-full px-4">
-              <div className="h-px bg-gray-200 mb-4"></div>
-              <div className="text-center text-gray-300 text-sm">Zona de cobro activa</div>
-            </div>
-          </div>
+          <p className="text-gray-400 text-sm py-8 text-center">Seleccione productos</p>
         ) : (
           <>
-            <div className="flex-1 space-y-2 overflow-y-auto mb-3">
+            <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
               {cartActual.map(i => (
-                <div key={i.product.id} className="flex items-center justify-between bg-emerald-50 p-2 rounded-lg">
-                  <div className="flex-1 min-w-0">
+                <div key={i.product.id} className="flex justify-between items-center border-b pb-2">
+                  <div className="flex-1">
                     <p className="font-medium text-sm truncate">{i.product.nombre}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <button onClick={() => cambiarCantidad(i.product.id, i.quantity-1)} className="bg-white border w-6 h-6 rounded hover:bg-gray-100 text-sm">-</button>
-                      <span className="text-sm font-bold w-6 text-center">{i.quantity}</span>
-                      <button onClick={() => cambiarCantidad(i.product.id, i.quantity+1)} className="bg-white border w-6 h-6 rounded hover:bg-gray-100 text-sm">+</button>
+                    <div className="flex items-center gap-1 mt-1">
+                      <button onClick={() => cambiarCantidad(i.product.id, i.quantity-1)} className="bg-gray-100 w-6 h-6 rounded text-sm">-</button>
+                      <span className="text-sm px-2">{i.quantity}</span>
+                      <button onClick={() => cambiarCantidad(i.product.id, i.quantity+1)} className="bg-gray-100 w-6 h-6 rounded text-sm">+</button>
                     </div>
                   </div>
                   <div className="text-right ml-2">
-                    <p className="font-bold text-emerald-700">${i.subtotal.toLocaleString()}</p>
-                    <button onClick={() => cambiarCantidad(i.product.id, 0)} className="text-red-400 text-xs hover:text-red-600">✕</button>
+                    <p className="font-bold text-sm">${i.subtotal.toLocaleString()}</p>
+                    <button onClick={() => cambiarCantidad(i.product.id, 0)} className="text-red-500 text-xs">X</button>
                   </div>
                 </div>
               ))}
@@ -493,10 +441,6 @@ function InventarioModule() {
         <h2 className="text-xl font-bold mb-4">➕ Nuevo Producto</h2>
         <div className="space-y-3">
           <input placeholder="Nombre *" className="w-full border rounded px-3 py-2" name="nombre" />
-          <select className="w-full border rounded px-3 py-2" name="categoria">
-            <option value="">Seleccionar categoría *</option>
-            {categorias.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-          </select>
           <div className="grid grid-cols-2 gap-3">
             <input placeholder="Precio" type="number" className="border rounded px-3 py-2" name="precio" />
             <input placeholder="Stock" type="number" className="border rounded px-3 py-2" name="stock" />
@@ -506,13 +450,8 @@ function InventarioModule() {
           <button onClick={() => setShowModal(false)} className="flex-1 border py-2 rounded text-gray-600">Cancelar</button>
           <button onClick={() => {
             const nombreInput = document.querySelector('input[name=nombre]')
-            if (nombreInput && nombreInput.value && document.querySelector('select[name=categoria]').value) {
-              crearProducto({ 
-            nombre: nombreInput.value, 
-            categoria_id: document.querySelector('select[name=categoria]').value,
-            precio_venta: Number(document.querySelector('input[name=precio]').value) || 0, 
-            stock: Number(document.querySelector('input[name=stock]').value) || 0 
-          })
+            if (nombreInput && nombreInput.value) {
+              crearProducto({ nombre: nombreInput.value, precio_venta: Number(document.querySelector('input[name=precio]').value) || 0, stock: Number(document.querySelector('input[name=stock]').value) || 0 })
               setShowModal(false)
             } else {
               alert('Escribe un nombre')
@@ -574,7 +513,6 @@ function InventarioModule() {
             ) : productosFiltrados.map(p => (
               <tr key={p.id} className="border-b hover:bg-gray-50">
                 <td className="p-3 font-medium">{p.nombre}</td>
-                <td className="p-3"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">{categorias.find(c => c.id === p.categoria_id)?.nombre || 'Sin categoría'}</span></td>
                 <td className="p-3 text-gray-500">{p.referencia || '-'}</td>
                 <td className="text-right p-3">${Number(p.precio_venta || 0).toLocaleString()}</td>
                 <td className="text-right p-3 font-bold">{p.stock || 0}</td>
@@ -627,7 +565,7 @@ function GestionInvModule() {
     }</h2>
       
       {!page && (
-        <div className="grid gap-2 mt-4">
+        <div className="grid gap-4 mt-4">
           {cards.map(card => (
             <div key={card.id} onClick={() => window.location.hash = '/pos/gestion_inv/' + card.id} className="bg-white p-4 rounded-lg border">
               <div className="flex items-center gap-3"><span className="text-2xl">{card.icono}</span>
