@@ -19,6 +19,34 @@ class ProductoResponse(BaseModel):
     precio_venta: float
 
 
+
+
+@router.post("/productos", status_code=201)
+async def create_producto(producto: dict, X_Tenant_ID: str = None):
+    """Create a new product"""
+    tid = X_Tenant_ID
+    if not tid:
+        return {"detail": "Se requiere X-Tenant-ID"}
+    
+    import uuid
+    pid = str(uuid.uuid4())
+    nombre = producto.get("nombre", "")
+    precio = producto.get("precio_venta", 0)
+    cat_id = producto.get("categoria_id") or None
+    
+    from sqlalchemy import text
+    from app.core.database import AsyncSessionLocal
+    async with AsyncSessionLocal() as db:
+        await db.execute(
+            text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, estado, categoria_id) VALUES (:id, :tid, :nombre, :pv, 'activo', :cat)"),
+            {"id": pid, "tid": tid, "nombre": nombre, "pv": precio, "cat": cat_id}
+        )
+        await db.commit()
+    
+    return {"id": pid, "message": "Producto creado"}
+
+
+
 @router.get("/productos")
 async def get_productos(
     current_user: dict = Depends(get_current_user),
