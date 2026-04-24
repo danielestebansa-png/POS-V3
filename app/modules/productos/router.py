@@ -31,7 +31,7 @@ async def get_productos(
     )
     rows = result.fetchall()
     return [
-        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0)}
+        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "categoria_id": str(r[3]) if r[3] else None}
         for r in rows
     ]
 
