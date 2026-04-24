@@ -32,7 +32,7 @@ async def create_producto(producto: dict, X_Tenant_ID: str = None):
     pid = str(uuid.uuid4())
     nombre = producto.get("nombre", "")
     precio = producto.get("precio_venta", 0)
-    cat_id = producto.get("categoria_id") or None
+    cat_id = producto.get("categoria_id") if producto.get("categoria_id") else None
     
     from sqlalchemy import text
     from app.core.database import AsyncSessionLocal
