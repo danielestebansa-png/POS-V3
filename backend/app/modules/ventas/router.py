@@ -137,7 +137,7 @@ async def create_venta(
             # 3.3 Validar stock (sin modificar)
             cantidadSolicitada = Decimal(str(item.cantidad))
             # Use productos.stock if inventario.cantidad is null/0
-            cantidadDisponible = inventario.cantidad if inventario.cantidad and inventario.cantidad > 0 else producto.stock or Decimal(0)
+            cantidadDisponible = inventario.cantidad if inventario.cantidad and inventario.cantidad > 0 else (getattr(producto, 'stock', None) or Decimal(0))
 
             if not producto.permite_stock_negativo and cantidadDisponible < cantidadSolicitada:
                 raise HTTPException(
