@@ -38,9 +38,11 @@ async def create_producto(producto: dict, request: Request):
     from sqlalchemy import text
     from app.core.database import AsyncSessionLocal
     async with AsyncSessionLocal() as db:
+        stock_val = int(producto.get("stock", 0) or 0)
+        print(f"DEBUG INSERT: stock={stock_val}, nombre={nombre}")
         await db.execute(
             text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, stock, estado, categoria_id) VALUES (:id, :tid, :nombre, :pv, :stock, 'activo', :cat)"),
-            {"id": pid, "tid": tid, "nombre": nombre, "pv": precio, "stock": int(producto.get("stock", 0) or 0), "cat": cat_id}
+            {"id": pid, "tid": tid, "nombre": nombre, "pv": precio, "stock": stock_val, "cat": cat_id}
         )
         await db.commit()
     
