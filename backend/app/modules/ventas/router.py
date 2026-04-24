@@ -225,10 +225,13 @@ async def create_venta(
             # Actualizar inventario (RESTAR cantidad - SOLO AQUÍ)
             inventario.cantidad = (inventario.cantidad or Decimal(0)) - cantidad
             
-            # Also update productos.stock if the column exists
+            # Also update productos.stock directly in DB
             stock_val = getattr(producto, 'stock', None)
             if stock_val is not None:
-                producto.stock = max(0, stock_val - int(cantidad))
+                await db.execute(
+                    text("UPDATE productos SET stock = :new_stock WHERE id = :pid"),
+                    {"new_stock": max(0, stock_val - int(cantidad)), "pid": producto.id}
+                )
 
         # 2.3 Commit final (solo si todo OK)
         await db.commit()
