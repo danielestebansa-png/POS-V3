@@ -91,6 +91,7 @@ class Producto(Base):
     precio_costo = Column(Numeric(15, 2), default=0)
     precio_venta = Column(Numeric(15, 2), nullable=False)
     precio_minimo = Column(Numeric(15, 2))
+    stock = Column(Integer, default=0)
     iva = Column(Numeric(5, 2), default=19)
     
     imagen_url = Column(String(500))
