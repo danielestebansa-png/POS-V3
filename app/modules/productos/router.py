@@ -30,10 +30,8 @@ async def get_productos(
         {"t": tid}
     )
     rows = result.fetchall()
-    # DEBUG: check what's in r[3]
-    print(f"DEBUG: r[0]={r[0]}, r[1]={r[1]}, r[2]={r[2]}, r[3]={r[3]}")
     return [
-        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "categoria_id": "TEST_FIXED_" + str(r[3]) if r[3] else None}
+        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "categoria_id": str(r[3]) if r[3] else None}
         for r in rows
     ]
 
