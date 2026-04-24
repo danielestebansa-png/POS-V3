@@ -26,7 +26,7 @@ async def get_productos(
 ):
     tid = current_user["tenant_id"]
     result = await db.execute(
-        text("SELECT id, nombre, precio_venta FROM productos WHERE tenant_id = :t AND estado = 'activo'"),
+        text("SELECT id, nombre, precio_venta, categoria_id FROM productos WHERE tenant_id = :t AND estado = 'activo'"),
         {"t": tid}
     )
     rows = result.fetchall()
