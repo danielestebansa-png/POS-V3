@@ -2,7 +2,7 @@
 # PRODUCTOS ROUTER
 # ============================================
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from pydantic import BaseModel
