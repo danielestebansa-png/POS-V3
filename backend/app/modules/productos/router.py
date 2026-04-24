@@ -173,9 +173,12 @@ async def create_producto(producto: ProductoCreate, current_user: dict = Depends
     import uuid
     pid = str(uuid.uuid4())
     
+    # Convert empty string to None for foreign key
+    cat_id = producto.categoria_id if producto.categoria_id else None
+    
     await db.execute(
         text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, estado, categoria_id) VALUES (:id, :tid, :nombre, :pv, 'activo', :cat)"),
-        {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta, "cat": producto.categoria_id}
+        {"id": pid, "tid": tid, "nombre": producto.nombre, "pv": producto.precio_venta, "cat": cat_id}
     )
     await db.commit()
     
