@@ -531,13 +531,6 @@ function GestionInvModule() {
   const [showCatModal, setShowCatModal] = useState(false)
   const [catNombre, setCatNombre] = useState('')
   const [catDesc, setCatDesc] = useState('')
-  const [categoriaForm, setCategoriaForm] = useState({ nombre: '', descripcion: '' })
-  const [editandoCategoria, setEditandoCategoria] = useState(null)
-  const openCategoriaModal = () => {
-    setCategoriaForm({ nombre: '', descripcion: '' });
-    setEditandoCategoria(null);
-    setShowCategoriaModal(true);
-  }
   useEffect(() => {
     const checkHash = async () => {
       const fullHash = window.location.hash;
@@ -556,115 +549,81 @@ function GestionInvModule() {
   }, [])
   
   const cards = [
-    {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos variables que definen las características de tus productos, como color y talla.', icono: '🎨'},
-    {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos en grupos para mejor gestión y búsqueda.', icono: '📁'},
-    {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información extra para cada producto según necesidades específicas.', icono: '📝'},
+    {id: 'variantes', titulo: 'Variantes', desc: 'Configura atributos.', icono: '🎨'},
+    {id: 'categorias', titulo: 'Categorías', desc: 'Organiza productos.', icono: '📁'},
+    {id: 'campos', titulo: 'Campos adicionales', desc: 'Personaliza información.', icono: '📝'},
   ]
   
-  // Show subpage only if page is set to categorias or campos
-  if (page) return (
-    <div className="p-4">
+  // SINGLE RETURN with modal inside
+  return (
+    <div className="p-4" style={{position:'relative'}}>
       <button onClick={() => window.location.hash = '/pos/gestion_inv'} className="text-emerald-600 mb-4">← Volver</button>
       <h2 className="text-xl font-bold">{
       page === 'variantes' ? '🎨 Variantes' : 
       page === 'categorias' ? '📁 Categorías' : 
-      '📝 Campos adicionales'
+      page === 'campos' ? '📝 Campos' : '📦 Inventario'
     }</h2>
       
-      {page === 'variantes' && (
-        <div className="space-y-4 mt-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg">Lista de Variantes</h3>
-              <button className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Variante</button>
+      {!page && (
+        <div className="grid gap-4 mt-4">
+          {cards.map(card => (
+            <div key={card.id} onClick={() => window.location.hash = '/pos/gestion_inv/' + card.id} className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center gap-3"><span className="text-2xl">{card.icono}</span>
+              <h3 className="font-bold">{card.titulo}</h3></div>
+              <p className="text-gray-500 text-sm">{card.desc}</p>
             </div>
-            <div className="text-center py-8 text-gray-400">
-              <p className="text-3xl mb-2">🎨</p>
-              <p>No hay variantes creadas</p>
-              <p className="text-sm">Crea variantes para definir atributos como color, talla, tamaño, etc.</p>
-            </div>
-          </div>
+          ))}
         </div>
+      )}
+      
+      {page === 'variantes' && (
+        <div className="mt-4"><div className="bg-white p-4 rounded-lg border">
+          <div className="flex justify-between"><h3 className="font-bold">Variantes</h3>
+          <button className="bg-emerald-600 text-white px-3 py-1 rounded text-sm">+ Nueva</button></div>
+          <p className="text-gray-400 text-center py-4">No hay variantes</p>
+        </div></div>
       )}
       
       {page === 'categorias' && (
-        <div className="space-y-4 mt-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg">Lista de Categorías</h3>
-              <button onClick={() => { setCatNombre(''); setCatDesc(''); setShowCatModal(true); }} className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nueva Categoría</button>
-            </div>
-            <div className="space-y-2">
-              {categoriasList.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  <p className="text-3xl mb-2">📁</p>
-                  <p>No hay categorías</p>
-                </div>
-              ) : categoriasList.map(cat => (
-                <div key={cat.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                  <span>📁 {cat.nombre}</span>
-                  <button className="text-gray-400 hover:text-gray-600">✏️</button>
-                </div>
-              ))}
-            </div>
+        <div className="mt-4"><div className="bg-white p-4 rounded-lg border">
+          <div className="flex justify-between"><h3 className="font-bold">Categorías</h3>
+          <button onClick={() => { setCatNombre(''); setCatDesc(''); setShowCatModal(true); }} className="bg-emerald-600 text-white px-3 py-1 rounded text-sm">+ Nueva Categoría</button></div>
+          <div className="space-y-2 mt-2">
+            {categoriasList.length === 0 ? <p className="text-gray-400 text-center py-4">No hay categorías</p> : 
+            categoriasList.map(cat => <div key={cat.id} className="p-2 bg-gray-50 rounded flex justify-between"><span>📁 {cat.nombre}</span><button className="text-gray-400">✏️</button></div>)}
           </div>
-        </div>
+        </div></div>
       )}
       
       {page === 'campos' && (
-        <div className="space-y-4 mt-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg">Lista de Campos Adicionales</h3>
-              <button className="bg-emerald-600 text-white px-4 py-2 rounded text-sm">+ Nuevo Campo</button>
-            </div>
-            <div className="text-center py-8 text-gray-400">
-              <p className="text-3xl mb-2">📝</p>
-              <p>No hay campos adicionales</p>
-              <p className="text-sm">Crea campos personalizados para tus productos</p>
+        <div className="mt-4"><div className="bg-white p-4 rounded-lg border">
+          <div className="flex justify-between"><h3 className="font-bold">Campos</h3>
+          <button className="bg-emerald-600 text-white px-3 py-1 rounded text-sm">+ Nuevo</button></div>
+          <p className="text-gray-400 text-center py-4">No hay campos</p>
+        </div></div>
+      )}
+      
+      {/* Modal - conditionally rendered */}
+      {showCatModal && (
+        <div style={{position:'fixed',inset:0,backgroundColor:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
+          <div style={{backgroundColor:'white',borderRadius:'8px',padding:'20px',width:'90%',maxWidth:'350px'}}>
+            <h3 style={{fontSize:'18px',fontWeight:'bold',marginBottom:'12px'}}>Nueva Categoría</h3>
+            <input placeholder="Nombre *" value={catNombre} onChange={e => setCatNombre(e.target.value)} style={{width:'100%',padding:'8px',border:'1px solid #ccc',borderRadius:'4px',marginBottom:'8px'}} />
+            <textarea placeholder="Descripción" value={catDesc} onChange={e => setCatDesc(e.target.value)} style={{width:'100%',padding:'8px',border:'1px solid #ccc',borderRadius:'4px',marginBottom:'12px',height:'60px'}} />
+            <div style={{display:'flex',gap:'8px'}}>
+              <button onClick={() => setShowCatModal(false)} style={{flex:1,padding:'8px',border:'1px solid #ccc',borderRadius:'4px',backgroundColor:'#fff'}}>Cancelar</button>
+              <button onClick={async () => {
+                if (!catNombre) { alert('Nombre requerido'); return; }
+                await crearCategoria({ nombre: catNombre, descripcion: catDesc, estado: 'activo' });
+                const r = await getCategorias();
+                setCategoriasList(r.data || []);
+                setShowCatModal(false);
+              }} style={{flex:1,padding:'8px',border:'none',borderRadius:'4px',backgroundColor:'#10b981',color:'#fff'}}>Crear</button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
-  
-  return (
-    <div className="space-y-4 p-4">
-      <h2 className="text-xl font-bold">Gesti00f3n de Inventario</h2>
-      <div className="grid gap-4">
-        {cards.map(card => (
-          <div key={card.id} onClick={() => window.location.hash = '/pos/gestion_inv/' + card.id} className="bg-white p-4 rounded-lg border shadow-sm cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">{card.icono}</span>
-              <h3 className="font-bold">{card.titulo}</h3>
-            </div>
-            <p className="text-gray-500 text-sm">{card.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-  
-  return (
-    <>
-      <div></div>
-      <CategoriaModalInline 
-        show={showCatModal}
-        onClose={() => setShowCatModal(false)}
-        nombre={catNombre}
-        setNombre={setCatNombre}
-        descripcion={catDesc}
-        setDescripcion={setCatDesc}
-        onCrear={async () => {
-          if (!catNombre) { alert('Nombre requerido'); return; }
-          await crearCategoria({ nombre: catNombre, descripcion: catDesc, estado: 'activo' });
-          const r = await getCategorias();
-          setCategoriasList(r.data || []);
-          setShowCatModal(false);
-        }}
-      />
-    </>
   )
 }
 
