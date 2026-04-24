@@ -62,7 +62,7 @@ async def get_productos(
     )
     rows = result.fetchall()
     return [
-        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "categoria_id": str(r[3]) if r[3] else None}
+        {"id": str(r[0]), "nombre": r[1], "precio_venta": float(r[2] or 0), "categoria_id": str(r[3]) if r[3] else None, "stock": r[4] if r[4] else 0}
         for r in rows
     ]
 
