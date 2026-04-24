@@ -40,7 +40,7 @@ async def create_producto(producto: dict, request: Request):
     async with AsyncSessionLocal() as db:
         await db.execute(
             text("INSERT INTO productos (id, tenant_id, nombre, precio_venta, stock, estado, categoria_id) VALUES (:id, :tid, :nombre, :pv, :stock, 'activo', :cat)"),
-            {"id": pid, "tid": tid, "nombre": nombre, "pv": precio, "stock": producto.get("stock", 0), "cat": cat_id}
+            {"id": pid, "tid": tid, "nombre": nombre, "pv": precio, "stock": int(producto.get("stock", 0) or 0), "cat": cat_id}
         )
         await db.commit()
     
