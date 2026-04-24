@@ -19,6 +19,12 @@ class ProductoResponse(BaseModel):
     precio_venta: float
 
 
+
+
+@router.get("/test")
+async def test_endpoint():
+    return {"message": "test works"}
+
 @router.get("/productos")
 async def get_productos(
     current_user: dict = Depends(get_current_user),
