@@ -160,3 +160,15 @@ async def seed_categories_and_products(db: AsyncSession = Depends(get_db)):
     await db.commit()
     
     return {"message": f"Created {len(categorias_data)} categories, {len(subcategorias)} subcategories, and {len(productos_data)} products"}
+
+
+@router.post("/migrate-stock")
+async def migrate_stock(db: AsyncSession = Depends(get_db)):
+    """Add stock column if not exists"""
+    try:
+        from sqlalchemy import text
+        await db.execute(text("ALTER TABLE productos ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT 0"))
+        await db.commit()
+        return {"message": "Migration done"}
+    except Exception as e:
+        return {"error": str(e)}
