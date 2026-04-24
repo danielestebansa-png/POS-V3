@@ -137,3 +137,48 @@ async def seed_categories_and_products(db: AsyncSession = Depends(get_db)):
     await db.commit()
     
     return {"message": f"Created {len(categorias_data)} categories, {len(subcategorias)} subcategories, and {len(productos_data)} products"}
+
+
+@router.put("/categorias/{categoria_id}")
+async def update_categoria(
+    categoria_id: str,
+    categoria: dict,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Actualizar una categoría"""
+    tid = current_user["tenant_id"]
+    nombre = categoria.get("nombre")
+    
+    if not nombre:
+        return {"detail": "Se requiere nombre"}
+    
+    try:
+        await db.execute(
+            text("UPDATE categorias SET nombre = :nom WHERE id = :id AND tenant_id = :tid"),
+            {"nom": nombre, "id": categoria_id, "tid": tid}
+        )
+        await db.commit()
+        return {"message": "Categoría actualizada", "nombre": nombre}
+    except Exception as e:
+        return {"detail": str(e)}
+
+
+@router.delete("/categorias/{categoria_id}")
+async def delete_categoria(
+    categoria_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Eliminar una categoría"""
+    tid = current_user["tenant_id"]
+    
+    try:
+        await db.execute(
+            text("DELETE FROM categorias WHERE id = :id AND tenant_id = :tid"),
+            {"id": categoria_id, "tid": tid}
+        )
+        await db.commit()
+        return {"message": "Categoría eliminada"}
+    except Exception as e:
+        return {"detail": str(e)}
