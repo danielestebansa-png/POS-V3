@@ -174,3 +174,63 @@ async def migrate_stock(db: AsyncSession = Depends(get_db)):
         return {"message": "Migration done"}
     except Exception as e:
         return {"error": str(e)}
+
+
+@router.put("/productos/{producto_id}", status_code=200)
+async def update_producto(producto_id: str, producto: dict, request: Request):
+    """Update a product"""
+    tid = request.headers.get("X-Tenant-ID")
+    if not tid:
+        return {"detail": "Se requiere X-Tenant-ID"}
+    
+    from sqlalchemy import text
+    from app.core.database import AsyncSessionLocal
+    
+    updates = []
+    params = {"id": producto_id, "tid": tid}
+    
+    if "nombre" in producto:
+        updates.append("nombre = :nombre")
+        params["nombre"] = producto["nombre"]
+    if "precio_venta" in producto:
+        updates.append("precio_venta = :precio")
+        params["precio"] = producto["precio_venta"]
+    if "stock" in producto:
+        updates.append("stock = :stock")
+        params["stock"] = producto["stock"]
+    if "categoria_id" in producto:
+        updates.append("categoria_id = :cat")
+        params["cat"] = producto["categoria_id"] if producto["categoria_id"] else None
+    
+    if not updates:
+        return {"detail": "No hay campos para actualizar"}
+    
+    query = f"UPDATE productos SET {', '.join(updates)} WHERE id = :id AND tenant_id = :tid"
+    
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(text(query), params)
+        await db.commit()
+    
+    return {"message": "Producto actualizado"}
+
+
+
+@router.delete("/productos/{producto_id}", status_code=200)
+async def delete_producto(producto_id: str, request: Request):
+    """Delete a product"""
+    tid = request.headers.get("X-Tenant-ID")
+    if not tid:
+        return {"detail": "Se requiere X-Tenant-ID"}
+    
+    from sqlalchemy import text
+    from app.core.database import AsyncSessionLocal
+    
+    async with AsyncSessionLocal() as db:
+        await db.execute(
+            text("UPDATE productos SET estado = 'eliminado' WHERE id = :id AND tenant_id = :tid"),
+            {"id": producto_id, "tid": tid}
+        )
+        await db.commit()
+    
+    return {"message": "Producto eliminado"}
+
