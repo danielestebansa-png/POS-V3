@@ -123,7 +123,6 @@ class Inventario(Base):
     cantidad = Column(Numeric(15, 3), default=0)
     cantidad_comprometida = Column(Numeric(15, 3), default=0)
     stock_minimo = Column(Numeric(15, 3), default=0)
-    #stock = Column(Numeric(15, 3), default=0  # Commented out - DB缺少)
     ubicacion = Column(String(100))
     
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
