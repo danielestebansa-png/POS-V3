@@ -119,3 +119,14 @@ async def init_db():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.get("/admin/migrate")
+async def run_migration(db: AsyncSession = Depends(get_db)):
+    """Run database migrations"""
+    try:
+        # Add stock column to inventario if not exists
+        await db.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
+        await db.commit()
+        return {"message": "Migration completed"}
+    except Exception as e:
+        return {"detail": str(e)}
