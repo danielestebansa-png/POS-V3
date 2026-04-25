@@ -282,7 +282,6 @@ async def create_producto(
     precio_costo = producto.get("precio_costo", 0)
     stock = producto.get("stock", 0)
     categoria_id = producto.get("categoria_id")
-    codigo = producto.get("codigo", "")
     
     if not nombre:
         return {"detail": "Se requiere nombre"}
@@ -291,9 +290,6 @@ async def create_producto(
         from uuid import uuid4
         prod_id = str(uuid4())
         await db.execute(
-            text("""INSERT INTO productos (id, tenant_id, nombre, precio_venta, precio_costo, stock, categoria_id, codigo, estado, created_at, updated_at) 
-               VALUES (:id, :tenant, :nombre, :precio, :costo, :stock, :cat, :codigo, 'activo', NOW(), NOW())"""),
-            {"id": prod_id, "tenant": tid, "nombre": nombre, "precio": precio_venta or 0, "costo": precio_costo or 0, "stock": stock or 0, "cat": categoria_id, "codigo": codigo or ""}
         )
         await db.commit()
         return {"message": "Producto creado", "id": prod_id, "nombre": nombre}
@@ -314,7 +310,6 @@ async def update_producto(
     try:
         await db.execute(
             text("""UPDATE productos SET nombre = :nombre, precio_venta = :precio, precio_costo = :costo, stock = :stock, 
-               categoria_id = :cat, codigo = :codigo, updated_at = NOW() 
                WHERE id = :id AND tenant_id = :tid"""),
             {
                 "nombre": producto.get("nombre"), 
@@ -322,7 +317,6 @@ async def update_producto(
                 "costo": producto.get("precio_costo", 0),
                 "stock": producto.get("stock", 0),
                 "cat": producto.get("categoria_id"),
-                "codigo": producto.get("codigo", ""),
                 "id": producto_id, 
                 "tid": tid
             }
