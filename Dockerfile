@@ -12,5 +12,5 @@ COPY app ./app
 # Expose port
 EXPOSE 8080
 
-# Start command
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Start command - use shell to interpret $PORT env var
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
