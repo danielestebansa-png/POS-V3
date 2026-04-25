@@ -115,25 +115,25 @@ async def create_venta(
             if not producto:
                 raise HTTPException(status_code=400, detail=f"Producto no encontrado: {item.producto_id}")
 
-            # 3.2 Obtener inventario con bloqueo (CREAR SI NO EXISTE)
-            result_inventario = await db.execute(
-                select(Inventario).where(
-                    and_(Inventario.producto_id == item.producto_id, Inventario.tenant_id == tenant_id)
-                ).with_for_update()
-            )
-            inventario = None  # No inventory table
-            
-            # CREAR INVENTARIO SI NO EXISTE (sin eliminar nunca)
-#             if not inventario:
-#                 inventario = Inventario(
-#                     tenant_id=tenant_id,
-#                     producto_id=producto.id,
-#                     cantidad=Decimal("0"),
-#                     stock_minimo=Decimal("0")
-#                 )
-#                 db.add(inventario)
-#                 await db.flush()
-
+#             # 3.2 Obtener inventario con bloqueo (CREAR SI NO EXISTE)
+#             result_inventario = await db.execute(
+#                 select(Inventario).where(
+#                     and_(Inventario.producto_id == item.producto_id, Inventario.tenant_id == tenant_id)
+#                 ).with_for_update()
+#             )
+#             inventario = None  # No inventory table
+#             
+#             # CREAR INVENTARIO SI NO EXISTE (sin eliminar nunca)
+# #             if not inventario:
+# #                 inventario = Inventario(
+# #                     tenant_id=tenant_id,
+# #                     producto_id=producto.id,
+# #                     cantidad=Decimal("0"),
+# #                     stock_minimo=Decimal("0")
+# #                 )
+# #                 db.add(inventario)
+# #                 await db.flush()
+# 
             # 3.3 Validar stock (sin modificar)
             cantidadSolicitada = Decimal(str(item.cantidad))
             cantidadDisponible = producto.stock if hasattr(producto, "stock") else Decimal(0)  # Use producto.stock
