@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from app.core.database import get_db
 from app.core.security import get_current_user
-from app.modules.productos.models import User, Producto, Inventario, InventarioMovimiento
+from app.modules.productos.models import User, Producto, InventarioMovimiento
 from app.modules.ventas.models import Venta, VentaDetalle
 from sqlalchemy.exc import IntegrityError
 
