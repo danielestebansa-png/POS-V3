@@ -5,7 +5,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.database import async_engine
+from app.core.database import async_engine, get_db
 
 # Import routers
 from app.modules.auth.router import router as auth_router
@@ -13,7 +13,7 @@ from app.modules.tenants.router import router as tenants_router
 from app.modules.productos.router import router as productos_router
 from app.modules.ventas.router import router as ventas_router
 from app.modules.clientes.router import router as clientes_router
-
+from app.modules.ventas.migrate import router as migrate_router
 
 # ============================================
 # APP INSTANCE
@@ -59,6 +59,7 @@ app.include_router(tenants_router, prefix="/api/tenants", tags=["Tenants"])
 app.include_router(productos_router, prefix="/api/productos", tags=["Productos"])
 app.include_router(ventas_router, prefix="/api/ventas", tags=["Ventas"])
 app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
+app.include_router(migrate_router, tags=["Migrate"])
 
 
 # ============================================
@@ -67,7 +68,7 @@ app.include_router(clientes_router, prefix="/api/clientes", tags=["Clientes"])
 
 @app.on_event("startup")
 async def init_db():
-    """Initialize database tables"""
+    """Initialize database and run migrations"""
     from app.core.database import Base
     from app.modules.tenants.models import Tenant
     from app.modules.productos.models import User
@@ -78,6 +79,14 @@ async def init_db():
     from sqlalchemy import text
     
     async with async_engine.begin() as conn:
+        # Run migrations first
+        try:
+            await conn.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
+            print("Migration: Added stock column to inventario")
+        except Exception as e:
+            print(f"Migration skipped: {e}")
+        
+        # Create tables
         await conn.run_sync(Base.metadata.create_all)
     
     # Seed categories and products if none exist
@@ -100,7 +109,7 @@ async def init_db():
                 sub_id = str(uuid4())
                 await conn.execute(text("INSERT INTO categorias (id, tenant_id, nombre, padre_id, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, :padre, 'activo', NOW(), NOW())"), {"id": sub_id, "tenant": tenant_id, "nombre": sub_nombre, "padre": cat_ids[padre_nombre]})
             
-            productos = [("Cuaderno College 100 hojas", 8500, 45), ("Lápices colores x12", 12000, 30), ("Borrador blanco", 1500, 100), ("Sacapuntas metálico", 3500, 25), ("Regla 30cm", 2500, 40), ("Carpeta plastificada", 5500, 35), ("Papel Bond A4 x500", 18000, 20), ("Clips x50", 2500, 50), ("Grapadora", 12000, 15), ("Tijeras escolares", 4500, 25), ("Pintura acrílica x6", 15000, 18), ("Pinceles pelo fino x5", 8000, 22), ("Cartulina colores x10", 6000, 40), ("Pegamento escolar", 3500, 60), ("Fomi colores", 4000, 35), ("Cable USB tipo C", 15000, 28), ("Mouse inalámbrico", 25000, 12), ("Teclado USB", 35000, 8), ("Audífonos basic", 18000, 15), ("Pendrive 32GB", 22000, 20)]
+            productos = [("Cuaderno College 100 hojas", 8500, 45), ("Lápices colores x12", 12000, 30), ("Borrador blanco", 1500, 100), ("Sacapuntas metálico", 3500, 25), ("Regla 30cm", 2500, 40), ("Carpeta plastificada", 5500, 35), ("Papel Bond A4 x500", 18000, 20), ("Clips x50", 2500, 50), ("Grapadora", 12000, 15), ("Tijeras escolar", 4500, 25), ("Pintura acrílica x6", 15000, 18), ("Pinceles pelo fino x5", 8000, 22), ("Cartulina colores x10", 6000, 40), ("Pegamento escolar", 3500, 60), ("Fomi colores", 4000, 35), ("Cable USB tipo C", 15000, 28), ("Mouse inalámbrico", 25000, 12), ("Teclado USB", 35000, 8), ("Audífonos basic", 18000, 15), ("Pendrive 32GB", 22000, 20)]
             for nombre, precio, stock in productos:
                 prod_id = str(uuid4())
                 cat_idx = productos.index((nombre, precio, stock))
@@ -119,28 +128,3 @@ async def init_db():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-@app.get("/admin/migrate")
-async def run_migration(db: AsyncSession = Depends(get_db)):
-    """Run database migrations"""
-    try:
-        # Add stock column to inventario if not exists
-        await db.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
-        await db.commit()
-        return {"message": "Migration completed"}
-    except Exception as e:
-        return {"detail": str(e)}
-
-@app.on_event("startup")
-async def run_startup_migrations():
-    """Run startup migrations"""
-    from sqlalchemy import text
-    from app.core.database import async_engine
-    async with async_engine.begin() as conn:
-        try:
-            await conn.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
-            print("Migration: Added stock column to inventario")
-        except Exception as e:
-            print(f"Migration skipped: {e}")
-from app.modules.ventas.migrate import router as migrate_router
-app.include_router(migrate_router)
