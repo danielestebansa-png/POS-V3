@@ -184,3 +184,52 @@ async def delete_categoria_new(
     except Exception as e:
         return {"detail": str(e)}
 print("DEBUG: Productos router loaded with", len([r for r in dir(router) if not r.startswith("_")]), "routes")
+
+
+# ============================================
+# RUTAS CORRECTAS PARA EL FRONTEND
+# ============================================
+
+@router.put("/categorias/{categoria_id}")
+async def update_categoria(
+    categoria_id: str,
+    categoria: dict,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Actualizar una categoría"""
+    tid = current_user["tenant_id"]
+    nombre = categoria.get("nombre")
+    
+    if not nombre:
+        return {"detail": "Se requiere nombre"}
+    
+    try:
+        await db.execute(
+            text("UPDATE categorias SET nombre = :nom, updated_at = NOW() WHERE id = :id AND tenant_id = :tid"),
+            {"nom": nombre, "id": categoria_id, "tid": tid}
+        )
+        await db.commit()
+        return {"message": "Categoría actualizada", "nombre": nombre}
+    except Exception as e:
+        return {"detail": str(e)}
+
+
+@router.delete("/categorias/{categoria_id}")
+async def delete_categoria(
+    categoria_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Eliminar una categoría"""
+    tid = current_user["tenant_id"]
+    
+    try:
+        await db.execute(
+            text("DELETE FROM categorias WHERE id = :id AND tenant_id = :tid"),
+            {"id": categoria_id, "tid": tid}
+        )
+        await db.commit()
+        return {"message": "Categoría eliminada"}
+    except Exception as e:
+        return {"detail": str(e)}
