@@ -142,3 +142,5 @@ async def run_startup_migrations():
             print("Migration: Added stock column to inventario")
         except Exception as e:
             print(f"Migration skipped: {e}")
+from app.modules.ventas.migrate import router as migrate_router
+app.include_router(migrate_router)
