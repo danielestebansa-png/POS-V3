@@ -8,7 +8,6 @@ from sqlalchemy import text
 from pydantic import BaseModel
 from typing import Optional
 from app.core.database import get_db
-print("DEBUG: Productos router loading...")
 from app.core.security import get_current_user
 
 router = APIRouter()
@@ -183,4 +182,3 @@ async def delete_categoria(
         return {"message": "Categoría eliminada"}
     except Exception as e:
         return {"detail": str(e)}
-print("DEBUG: Productos router loaded with", len([r for r in dir(router) if not r.startswith("_")]), "routes")
