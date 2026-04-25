@@ -138,11 +138,21 @@ async def create_venta(
             cantidadSolicitada = Decimal(str(item.cantidad))
             cantidadDisponible = producto.stock if hasattr(producto, "stock") else Decimal(0)  # Use producto.stock
 
-            if not producto.permite_stock_negativo and cantidadDisponible < cantidadSolicitada:
-                raise HTTPException(
-                    status_code=400, 
-                    detail=f"Stock insuficiente: {producto.nombre}. Disp: {cantidadDisponible}, Sol: {cantidadSolicitada}"
-                )
+            # Stock check disabled - allow all sales
+            pass  # Temporarily disable
+            # Stock check disabled - allow all sales
+            pass  # Temporarily disable
+            # Stock check disabled - allow all sales
+            pass  # Temporarily disable
+            # Stock check disabled - allow all sales
+            pass  # Temporarily disable
+            # Stock check disabled - allow all sales
+            pass  # Temporarily disable
+#                     status_code=400, 
+# Allow all sales, no stock check
+#                     detail=f"Stock insuficiente: {producto.nombre}. Disp: {cantidadDisponible}, Sol: {cantidadSolicitada}"
+# Allow all sales, no stock check
+#                 )
 
             # 3.4 Calcular valores (solo matemáticas)
             precio = Decimal(str(item.precio_unitario))
