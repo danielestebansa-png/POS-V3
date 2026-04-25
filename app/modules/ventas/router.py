@@ -136,7 +136,7 @@ async def create_venta(
 
             # 3.3 Validar stock (sin modificar)
             cantidadSolicitada = Decimal(str(item.cantidad))
-            cantidadDisponible = inventario.cantidad or Decimal(0)
+            cantidadDisponible = Decimal(producto.stock or 0)  # Use product stock
 
             if not producto.permite_stock_negativo and cantidadDisponible < cantidadSolicitada:
                 raise HTTPException(
@@ -223,6 +223,8 @@ async def create_venta(
 
             # Actualizar inventario (RESTAR cantidad - SOLO AQUÍ)
             inventario.cantidad = (inventario.cantidad or Decimal(0)) - cantidad
+            # Also update product stock
+            producto.stock = int((producto.stock or 0) - cantidad)
 
         # 2.3 Commit final (solo si todo OK)
         await db.commit()
