@@ -130,3 +130,15 @@ async def run_migration(db: AsyncSession = Depends(get_db)):
         return {"message": "Migration completed"}
     except Exception as e:
         return {"detail": str(e)}
+
+@app.on_event("startup")
+async def run_startup_migrations():
+    """Run startup migrations"""
+    from sqlalchemy import text
+    from app.core.database import async_engine
+    async with async_engine.begin() as conn:
+        try:
+            await conn.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
+            print("Migration: Added stock column to inventario")
+        except Exception as e:
+            print(f"Migration skipped: {e}")
