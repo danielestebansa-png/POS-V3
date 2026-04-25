@@ -166,7 +166,7 @@ async def create_venta(
             # Guardar datos validados
             items_validados.append({
                 "producto": producto,
-                "inventario": inventario,
+                "inventario": {"cantidad": producto.stock},
                 "cantidad": float(cantidadSolicitada),
                 "precio": float(precio),
                 "descuento": float(descuento_item),
@@ -218,16 +218,26 @@ async def create_venta(
             )
             db.add(detalle)
 
-            # Crear movimiento de inventario
-            movimiento = InventarioMovimiento(
-                tenant_id=tenant_id,
-                producto_id=producto.id,
-                tipo="salida",
-                cantidad=item["cantidad"],
-                costo_unitario=item["costo_unitario"],
-                documento_ref=str(nueva_venta.id),
-                observaciones=f"Venta {numero}",
-                user_id=None
+# Skipping inventory movements
+#             # Crear movimiento de inventario
+# Skipping inventory movements
+#             movimiento = InventarioMovimiento(
+# Skipping inventory movements
+#                 tenant_id=tenant_id,
+# Skipping inventory movements
+#                 producto_id=producto.id,
+# Skipping inventory movements
+#                 tipo="salida",
+# Skipping inventory movements
+#                 cantidad=item["cantidad"],
+# Skipping inventory movements
+#                 costo_unitario=item["costo_unitario"],
+# Skipping inventory movements
+#                 documento_ref=str(nueva_venta.id),
+# Skipping inventory movements
+#                 observaciones=f"Venta {numero}",
+# Skipping inventory movements
+#                 user_id=None
             )
             db.add(movimiento)
 
