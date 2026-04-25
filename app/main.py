@@ -41,10 +41,13 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
+    import subprocess
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()[:8]
     return {
         "app": settings.APP_NAME,
         "version": settings.APP_VERSION,
-        "status": "running"
+        "status": "running",
+        "commit": commit
     }
 
 
