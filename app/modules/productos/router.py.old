@@ -140,8 +140,8 @@ async def seed_categories_and_products(db: AsyncSession = Depends(get_db)):
     return {"message": f"Created {len(categorias_data)} categories, {len(subcategorias)} subcategories, and {len(productos_data)} products"}
 
 
-@router.put("/editar-categoria/{categoria_id}")
-async def update_categoria_new(
+@router.put("/categorias/{categoria_id}")
+async def update_categoria(
     categoria_id: str,
     categoria: dict,
     current_user: dict = Depends(get_current_user),
@@ -165,8 +165,8 @@ async def update_categoria_new(
         return {"detail": str(e)}
 
 
-@router.delete("/editar-categoria/{categoria_id}")
-async def delete_categoria_new(
+@router.delete("/categorias/{categoria_id}")
+async def delete_categoria(
     categoria_id: str,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
