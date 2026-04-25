@@ -121,18 +121,18 @@ async def create_venta(
                     and_(Inventario.producto_id == item.producto_id, Inventario.tenant_id == tenant_id)
                 ).with_for_update()
             )
-            inventario = result_inventario.scalar_one_or_none()
+            inventario = None  # No inventory table
             
             # CREAR INVENTARIO SI NO EXISTE (sin eliminar nunca)
-            if not inventario:
-                inventario = Inventario(
-                    tenant_id=tenant_id,
-                    producto_id=producto.id,
-                    cantidad=Decimal("0"),
-                    stock_minimo=Decimal("0")
-                )
-                db.add(inventario)
-                await db.flush()
+#             if not inventario:
+#                 inventario = Inventario(
+#                     tenant_id=tenant_id,
+#                     producto_id=producto.id,
+#                     cantidad=Decimal("0"),
+#                     stock_minimo=Decimal("0")
+#                 )
+#                 db.add(inventario)
+#                 await db.flush()
 
             # 3.3 Validar stock (sin modificar)
             cantidadSolicitada = Decimal(str(item.cantidad))
@@ -192,7 +192,7 @@ async def create_venta(
         # 2.2 Procesar cada item
         for item in items_validados:
             producto = item["producto"]
-            inventario = item["inventario"]
+            producto_temp = producto
             cantidad = Decimal(str(item["cantidad"]))
 
             # Crear detalle de venta
