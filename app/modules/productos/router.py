@@ -233,3 +233,33 @@ async def delete_categoria(
         return {"message": "Categoría eliminada"}
     except Exception as e:
         return {"detail": str(e)}
+
+
+# ============================================
+# CREAR CATEGORIA
+# ============================================
+
+@router.post("/categorias")
+async def create_categoria(
+    categoria: dict,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Crear una nueva categoría"""
+    tid = current_user["tenant_id"]
+    nombre = categoria.get("nombre")
+    
+    if not nombre:
+        return {"detail": "Se requiere nombre"}
+    
+    try:
+        from uuid import uuid4
+        cat_id = str(uuid4())
+        await db.execute(
+            text("INSERT INTO categorias (id, tenant_id, nombre, estado, created_at, updated_at) VALUES (:id, :tenant, :nombre, 'activo', NOW(), NOW())"),
+            {"id": cat_id, "tenant": tid, "nombre": nombre}
+        )
+        await db.commit()
+        return {"message": "Categoría creada", "id": cat_id, "nombre": nombre}
+    except Exception as e:
+        return {"detail": str(e)}
