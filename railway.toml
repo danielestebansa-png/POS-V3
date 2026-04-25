@@ -1,3 +1,11 @@
-[railway]
-projectId = "b032bba9-edc4-4b05-ac52-08ff584f8ebe"
-serviceId = ""
+[build]
+builder = "nixpacks"
+
+[start]
+cmd = ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+maxRestartRetries = 10
