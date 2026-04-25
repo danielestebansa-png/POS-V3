@@ -128,3 +128,22 @@ async def init_db():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# ============================================
+# MIGRATION ENDPOINT
+# ============================================
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_db, async_engine
+from sqlalchemy import text
+
+@app.post("/migrate-add-stock")
+async def migrate_add_stock(db: AsyncSession = Depends(get_db)):
+    """Add stock column to inventario table - run once"""
+    try:
+        # Add column if not exists
+        await db.execute(text("ALTER TABLE inventario ADD COLUMN IF NOT EXISTS stock NUMERIC(15,3) DEFAULT 0"))
+        await db.commit()
+        return {"success": True, "message": "Column stock added to inventario table"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
